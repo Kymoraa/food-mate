@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Food Mate</string>
+    <string name="email_hint">Enter email</string>
+    <string name="password_hint">Enter password</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="check_restaurant">Is restaurant?</string>
+
+    <string name="sign_in">Sign In</string>
+    <string name="register">Register</string>
+
+    <string name="no_account">No account? Register</string>
+    <string name="guest">Proceed as guest</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_history">History</string>
+    <string name="nav_favourites">Favourites</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>

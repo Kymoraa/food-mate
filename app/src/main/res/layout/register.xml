@@ -1,0 +1,97 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="msc.project.foodmate.Login"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:isScrollContainer="true"
+    android:background="@drawable/pic">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/blackOverlay">
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="70dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/foodmate_logo"/>
+
+
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="270dp"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:ems="10"
+            android:layout_below="@+id/ivLogo"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="20dp"
+            android:hint="@string/email_hint"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/orange700" />
+
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="270dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:hint="@string/password_hint"
+            android:layout_below="@+id/etEmail"
+            android:layout_alignLeft="@+id/etEmail"
+            android:layout_alignStart="@+id/etEmail"
+            android:layout_marginBottom="20dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:backgroundTint="@color/orange700"/>
+
+        <EditText
+            android:id="@+id/etConfirmPassword"
+            android:layout_width="270dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:hint="@string/confirm_password"
+            android:layout_below="@+id/etPassword"
+            android:layout_alignLeft="@+id/etEmail"
+            android:layout_alignStart="@+id/etEmail"
+            android:layout_marginBottom="20dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:backgroundTint="@color/orange700"/>
+
+        <CheckBox
+            android:id="@+id/cbRestaurant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/etConfirmPassword"
+            android:text="@string/check_restaurant"
+            android:buttonTint="@color/white"
+            android:textColor="@color/white"
+            android:layout_marginBottom="20dp"
+            android:layout_centerHorizontal="true"/>
+
+        <Button
+            android:id="@+id/bRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="@string/register"
+            android:background="@color/orange700"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:layout_below="@+id/cbRestaurant"
+            android:layout_alignRight="@+id/etPassword"
+            android:layout_alignEnd="@+id/etPassword"
+            android:layout_alignLeft="@+id/etPassword"
+            android:layout_alignStart="@+id/etPassword" />
+
+
+
+    </RelativeLayout>
+</LinearLayout>
