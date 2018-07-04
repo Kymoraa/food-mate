@@ -7,6 +7,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 
 /**
@@ -28,6 +32,12 @@ public class MainProfile extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
+    private TextView tvUser;
+
+
 
     public MainProfile() {
         // Required empty public constructor
@@ -61,10 +71,22 @@ public class MainProfile extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.main_profile, container, false);
+        View view = inflater.inflate(R.layout.main_profile, container, false);
+
+        //check the current user and set their email on the profile page
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        tvUser = view.findViewById(R.id.tvUser);
+
+            if (firebaseAuth.getCurrentUser() != null) {
+                tvUser.setText(firebaseUser.getEmail());
+            }
+
+        return view;
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event

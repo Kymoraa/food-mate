@@ -47,12 +47,12 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
         firebaseAuth = FirebaseAuth.getInstance();
         //check if user is already logged in
-//        if (firebaseAuth.getCurrentUser() != null){
-//            //user is already logged in. start main activity
-//            finish();
-//            Intent intent = new Intent(Register.this, Main.class);
-//            startActivity(intent);
-//        }
+        if (firebaseAuth.getCurrentUser() != null){
+            //user is already logged in. start main activity
+            finish();
+            Intent intent = new Intent(Register.this, Main.class);
+            startActivity(intent);
+        }
 
          progressDialog = new ProgressDialog(this);
 

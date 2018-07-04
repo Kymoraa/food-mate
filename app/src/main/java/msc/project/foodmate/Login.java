@@ -46,14 +46,15 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
 
+
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        //check if user is already logged in
         if (firebaseAuth.getCurrentUser() != null){
             //user is already logged in. start main activity
             finish();
             startActivity(new Intent(getApplicationContext(), Main.class));
         }
-        firebaseAuth = FirebaseAuth.getInstance();
-
-        //check if user is already logged in
 
 
         progressDialog = new ProgressDialog(this);

@@ -1,5 +1,6 @@
 package msc.project.foodmate;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,7 +10,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 
 /**
@@ -21,10 +27,19 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
         MainFavourites.OnFragmentInteractionListener, MainProfile.OnFragmentInteractionListener{
 
     private ActionBar actionBar;
+    private FirebaseAuth firebaseAuth;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        if(firebaseAuth.getCurrentUser()==null){
+            //no user currently logged in
+            finish();
+            startActivity(new Intent(this,Login.class));
+        }
+
 
 
         actionBar = getSupportActionBar();
@@ -90,5 +105,28 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.overflow_items, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()== R.id.menu_settings){
+            Toast.makeText(Main.this, "Settings... coming soon", Toast.LENGTH_SHORT).show();
+        }
+        if(item.getItemId()== R.id.menu_about){
+            Toast.makeText(Main.this, "About... coming soon", Toast.LENGTH_SHORT).show();
+        }
+        if(item.getItemId()== R.id.menu_sign_out){
+            firebaseAuth.signOut();
+            finish();
+            startActivity(new Intent(this, Login.class));
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

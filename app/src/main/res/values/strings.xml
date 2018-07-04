@@ -8,6 +8,9 @@
 
     <string name="sign_in">Sign In</string>
     <string name="register">Register</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="about">About</string>
+    <string name="settings">Settings</string>
 
     <string name="no_account">No account? Register</string>
     <string name="guest">Proceed as guest</string>
