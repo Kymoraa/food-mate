@@ -1,0 +1,121 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="msc.project.foodmate.RestaurantAdd">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="5dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ivCuisine"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/ghost_button" />
+
+            <Button
+                android:id="@+id/bChooseFile"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/ivCuisine"
+                android:layout_below="@+id/ivCuisine"
+                android:layout_marginTop="13dp"
+                android:background="@drawable/ghost_button"
+                android:text="@string/choose_file"
+
+                android:textColor="@color/orange700"
+                android:textSize="15sp" />
+
+            <EditText
+                android:id="@+id/etCuisineName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/ivCuisine"
+                android:layout_marginEnd="14dp"
+                android:layout_marginStart="14dp"
+                android:layout_toEndOf="@+id/ivCuisine"
+                android:backgroundTint="@color/orange700"
+                android:ems="10"
+                android:hint="@string/cuisine_name"
+                android:textColor="@color/grey"
+                android:typeface="serif" />
+
+            <EditText
+                android:id="@+id/etPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/etCuisineName"
+                android:layout_marginEnd="14dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="14dp"
+                android:layout_toEndOf="@+id/ivCuisine"
+                android:backgroundTint="@color/orange700"
+                android:ems="10"
+                android:hint="@string/price"
+                android:textColor="@color/grey"
+                android:typeface="serif" />
+
+            <EditText
+                android:id="@+id/etDescription"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_below="@+id/bChooseFile"
+                android:layout_marginEnd="14dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="14dp"
+                android:backgroundTint="@color/orange700"
+                android:ems="10"
+                android:gravity="top"
+                android:hint="@string/description"
+                android:inputType="text|textMultiLine"
+                android:textColor="@color/grey" />
+
+            <EditText
+                android:id="@+id/etIngredients"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_below="@+id/etDescription"
+                android:layout_marginEnd="14dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="14dp"
+                android:backgroundTint="@color/orange700"
+                android:ems="10"
+                android:gravity="top"
+                android:hint="@string/ingredients"
+                android:inputType="text|textMultiLine"
+                android:textColor="@color/grey" />
+
+
+            <ProgressBar
+                android:id="@+id/pbUpload"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/etIngredients"/>
+
+
+
+
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</FrameLayout>
+
+
+
+

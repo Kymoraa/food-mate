@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "653150991776-5nqontfu5o9e7j93gdi8qd7i5ekjh0fs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "msc.project.foodmate",
+            "certificate_hash": "99dc019687fb3606078626fdc25909e1d761a949"
+          }
+        },
+        {
           "client_id": "653150991776-2gb4poh90595uhdvl1je75hm218jd7gg.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "653150991776-2gb4poh90595uhdvl1je75hm218jd7gg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

@@ -2,15 +2,18 @@ package msc.project.foodmate;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -60,8 +63,22 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
          bRegister.setOnClickListener(this);
 
          etEmail = (EditText) findViewById(R.id.etEmail);
+         etEmail.addTextChangedListener(new EmailTextWatcher(etEmail));
+
          etPassword = (EditText) findViewById(R.id.etPassword);
+         etPassword.addTextChangedListener(new PasswordTextWatcher(etPassword));
+
          etConfirmPassword = (EditText) findViewById(R.id.etConfirmPassword);
+         etConfirmPassword.addTextChangedListener(new ConfPasswordTextWatcher(etConfirmPassword));
+
+         cbRestaurant = (CheckBox) findViewById(R.id.cbRestaurant);
+         cbRestaurant.setChecked(true);
+
+         cbRestaurant.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // update your model (or other business logic) based on isChecked
+            }
+         });
 
 
     }
@@ -140,6 +157,88 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
                     }
                 });
+
+    }
+
+    /**
+     * TextWatcher - set the fonts for edit texts with hints
+     * 1. email
+     * 2. password
+     * 3. confirm password
+     */
+    public class EmailTextWatcher implements TextWatcher {
+        public EmailTextWatcher(EditText e) {
+            etEmail = e;
+            etEmail.setTypeface(Typeface.SERIF);
+        }
+
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            etEmail.setTypeface(Typeface.SERIF);
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            etEmail.setTypeface(Typeface.SERIF);
+        }
+
+        public void afterTextChanged(Editable s) {
+            if(s.length() == 0){
+                etEmail.setTypeface(Typeface.SERIF);
+            } else {
+                etEmail.setTypeface(Typeface.SERIF);
+            }
+
+        }
+
+    }
+
+    public class PasswordTextWatcher implements TextWatcher {
+        public PasswordTextWatcher(EditText p) {
+            etPassword = p;
+            etPassword.setTypeface(Typeface.SERIF);
+        }
+
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            etPassword.setTypeface(Typeface.SERIF);
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            etPassword.setTypeface(Typeface.SERIF);
+        }
+
+        public void afterTextChanged(Editable s) {
+            if(s.length() == 0){
+                etPassword.setTypeface(Typeface.SERIF);
+            } else {
+                etPassword.setTypeface(Typeface.SERIF);
+            }
+
+        }
+
+    }
+
+    public class ConfPasswordTextWatcher implements TextWatcher {
+        public ConfPasswordTextWatcher(EditText cp) {
+            etConfirmPassword = cp;
+            etConfirmPassword.setTypeface(Typeface.SERIF);
+        }
+
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            etConfirmPassword.setTypeface(Typeface.SERIF);
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            etConfirmPassword.setTypeface(Typeface.SERIF);
+        }
+
+        public void afterTextChanged(Editable s) {
+            if(s.length() == 0){
+                etConfirmPassword.setTypeface(Typeface.SERIF);
+            } else {
+                etConfirmPassword.setTypeface(Typeface.SERIF);
+            }
+
+        }
+
 
     }
 

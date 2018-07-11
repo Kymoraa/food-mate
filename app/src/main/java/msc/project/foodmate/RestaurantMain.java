@@ -15,31 +15,30 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+
 
 
 /**
  * Created by Jackie Moraa on 01/07/2018.
  */
 
-public class Main extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
-        ,MainHome.OnFragmentInteractionListener,MainHistory.OnFragmentInteractionListener,
-        MainFavourites.OnFragmentInteractionListener, MainProfile.OnFragmentInteractionListener,
-        SearchResults.OnFragmentInteractionListener{
+public class RestaurantMain extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+        ,RestaurantHome.OnFragmentInteractionListener,RestaurantAdd.OnFragmentInteractionListener,
+        RestaurantProfile.OnFragmentInteractionListener{
 
     private ActionBar actionBar;
     private FirebaseAuth firebaseAuth;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.restaurant_main);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if(firebaseAuth.getCurrentUser()==null){
-            //no user currently logged in
-            finish();
-            startActivity(new Intent(this,Login.class));
-        }
+//        if(firebaseAuth.getCurrentUser()==null){
+//            //no user currently logged in
+//            finish();
+//            startActivity(new Intent(this,Login.class));
+//        }
 
 
 
@@ -50,7 +49,7 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
 
         // load the home fragment by default
         actionBar.setTitle("Food Mate");
-        loadFragment(new MainHome());
+        loadFragment(new RestaurantHome());
 
     }
 
@@ -63,25 +62,19 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
             switch (item.getItemId()) {
                 case R.id.nav_home:
                     actionBar.setTitle("Food Mate");
-                    fragment = new MainHome();
+                    fragment = new RestaurantHome();
                     loadFragment(fragment);
                     return true;
 
-                case R.id.nav_history:
-                    actionBar.setTitle("History");
-                    fragment = new MainHistory();
-                    loadFragment(fragment);
-                    return true;
-
-                case R.id.nav_favourite:
-                    actionBar.setTitle("Favourites");
-                    fragment = new MainFavourites();
+                case R.id.nav_add_new:
+                    actionBar.setTitle("Add New");
+                    fragment = new RestaurantAdd();
                     loadFragment(fragment);
                     return true;
 
                 case R.id.nav_profile:
-                    actionBar.setTitle("My Profile");
-                    fragment = new MainProfile();
+                    actionBar.setTitle("Restaurant Profile");
+                    fragment = new RestaurantProfile();
                     loadFragment(fragment);
                     return true;
             }
@@ -117,10 +110,10 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId()== R.id.menu_settings){
-            Toast.makeText(Main.this, "Settings... coming soon", Toast.LENGTH_SHORT).show();
+            Toast.makeText(RestaurantMain.this, "Settings... coming soon", Toast.LENGTH_SHORT).show();
         }
         if(item.getItemId()== R.id.menu_about){
-            Toast.makeText(Main.this, "About... coming soon", Toast.LENGTH_SHORT).show();
+            Toast.makeText(RestaurantMain.this, "About... coming soon", Toast.LENGTH_SHORT).show();
         }
         if(item.getItemId()== R.id.menu_sign_out){
             firebaseAuth.signOut();

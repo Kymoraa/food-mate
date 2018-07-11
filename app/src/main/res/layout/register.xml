@@ -74,6 +74,7 @@
             android:text="@string/check_restaurant"
             android:buttonTint="@color/white"
             android:textColor="@color/white"
+            android:typeface="serif"
             android:layout_marginBottom="20dp"
             android:layout_centerHorizontal="true"/>
 
@@ -82,8 +83,9 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:text="@string/register"
-            android:background="@color/orange700"
-            android:textColor="@color/white"
+            android:background="@drawable/ghost_button"
+            android:textColor="@color/orange700"
+            android:textAllCaps="true"
             android:textSize="15sp"
             android:layout_below="@+id/cbRestaurant"
             android:layout_alignRight="@+id/etPassword"

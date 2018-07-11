@@ -18,6 +18,17 @@
     <string name="nav_history">History</string>
     <string name="nav_favourites">Favourites</string>
     <string name="nav_profile">Profile</string>
+    <string name="nav_add">Add New</string>
+    <string name="find_restaurant">Find a restaurant near you based on your requirements</string>
+    <string name="search">Search Restaurants</string>
+    <string name="recent">Recently Viewed</string>
+    <string name="choose_file">Choose File</string>
+    <string name="cuisine_name">Cuisine Name</string>
+    <string name="price">Price</string>
+    <string name="description">Cuisine Description</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="rating">Rating</string>
+    <string name="upload">Upload</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
