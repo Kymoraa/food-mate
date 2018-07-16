@@ -2,28 +2,25 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="3dp"
+    app:cardElevation="3dp"
+    app:contentPadding="5dp"
+    app:cardUseCompatPadding="true">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/ivCuisine"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:textColor="@color/black"
-            android:textSize="15sp" />
+
 
         <TextView
             android:id="@+id/tvCuisineName"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="21dp"
-            android:layout_toEndOf="@+id/ivCuisine"
-            android:text="Cuisine Name"
+            android:text="@string/cuisine_name"
             android:textColor="@color/black"
             android:textSize="15sp" />
 
@@ -31,15 +28,19 @@
             android:id="@+id/tvPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/tvCuisineName"
-            android:layout_centerVertical="true"
-            android:text="Price"
             android:textColor="@color/black"
-            android:textSize="15sp" />
+            android:text="@string/price"
+            android:textSize="12sp" />
 
+        <ImageView
+            android:id="@+id/ivCuisine"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
+            android:background="@drawable/image_loading"/>
 
+    </LinearLayout>
 
-
-    </RelativeLayout>
 
 </android.support.v7.widget.CardView>

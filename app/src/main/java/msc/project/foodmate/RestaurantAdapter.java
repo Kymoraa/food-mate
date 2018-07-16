@@ -36,22 +36,18 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Im
     @Override
     public void onBindViewHolder(ImageViewHolder holder, int position) {
         CuisineUploads uploadCurrent = mCuisineUploads.get(position);
-//        Picasso.get()
-//                .load(uploadCurrent.getImageUri())
-//                .resize(50,50)
-//                .error(R.drawable.image_error)
-//                .into(holder.ivCuisine);
+        Picasso.get()
+                .load(uploadCurrent.getImageUri())
+                .resize(50,50)
+                .into(holder.ivCuisine);
 
 //        Picasso picasso = new Picasso.Builder(mContext)
 //                .downloader(new )
 //                .build();
 
-        Glide.with(mContext)
-                .load(uploadCurrent.getImageUri())
-                .into(holder.ivCuisine);
-
-
-
+//        Glide.with(mContext)
+//                .load(uploadCurrent.getImageUri())
+//                .into(holder.ivCuisine);
 
 
         holder.tvCuisineName.setText(uploadCurrent.getName());
