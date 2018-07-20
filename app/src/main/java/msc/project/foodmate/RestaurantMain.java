@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -44,7 +45,9 @@ public class RestaurantMain extends AppCompatActivity implements NavigationView.
 
         actionBar = getSupportActionBar();
 
-        BottomNavigationView navigationView = (BottomNavigationView) findViewById(R.id.navigationView);
+        BottomNavigationView navigationView = (BottomNavigationView) findViewById(R.id.navigationView); 
+        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) navigationView.getLayoutParams();
+        layoutParams.setBehavior(new BottomNavigationViewBehavior());
         navigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         // load the home fragment by default

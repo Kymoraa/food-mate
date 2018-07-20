@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="msc.project.foodmate">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -10,33 +10,39 @@
         android:label="@string/app_name"
         android:logo="@drawable/foodmate_logo2"
         android:supportsRtl="true">
-
-        <activity android:name=".Login"
+        <activity
+            android:name=".Login"
             android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
-
-        <activity android:name=".Register"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-
-        <activity android:name=".Main"
+        <activity
+            android:name=".Register"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".Main"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustNothing">
-        </activity>
+            android:windowSoftInputMode="adjustNothing"/>
 
-        <activity android:name=".RestaurantMain"
+        <activity
+            android:name=".RestaurantMain"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateVisible|adjustPan">
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        </activity>
+
+
+        <activity
+            android:name=".PostListActivity"
+            android:theme="@style/AppTheme">
+
+
 
         </activity>
 
     </application>
-
 </manifest>

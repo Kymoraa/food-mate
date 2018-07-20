@@ -20,6 +20,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.regex.Pattern;
 
@@ -33,6 +35,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     private CheckBox cbRestaurant;
     private ProgressDialog progressDialog;
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference databaseReference;
 
     public final Pattern EMAIL_ADDRESS_PATTERN = Pattern.compile(
             "[a-zA-Z0-9+._%-+]{1,256}" +
@@ -45,17 +48,14 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     );
 
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
 
         firebaseAuth = FirebaseAuth.getInstance();
         //check if user is already logged in
-        if (firebaseAuth.getCurrentUser() != null){
-            //user is already logged in. start main activity
-            finish();
-            Intent intent = new Intent(Register.this, Main.class);
-            startActivity(intent);
-        }
+
 
          progressDialog = new ProgressDialog(this);
 
@@ -77,10 +77,30 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
          cbRestaurant.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 // update your model (or other business logic) based on isChecked
+//
+//                String user_role = firebaseAuth.getCurrentUser().getUid();
+//                DatabaseReference current_user_db = databaseReference.child(user_role);
+//                if(cbRestaurant.isChecked()){
+//                    current_user_db.child("1").setValue("Is Restaurant");
+//                }else {
+//                    current_user_db.child("2").setValue("Customer");
+//                }
             }
          });
 
 
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (firebaseAuth.getCurrentUser() != null){
+            //user is already logged in. start main activity
+            finish();
+            Intent intent = new Intent(Register.this, Main.class); // need to know user role
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -92,7 +112,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
     private void registerUser(){
 
-        String email = etEmail.getText().toString().trim();
+        final String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
         String confirmPassword = etConfirmPassword.getText().toString().trim();
 
@@ -146,14 +166,33 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
                         if (task.isSuccessful()){
 
-                        //user is successfully registered
-                        //open the account page to set up their profile
-                            finish();
-                            startActivity(new Intent(getApplicationContext(), Main.class));
+                            //user object
+                            User user = new User(
+                                    email,
+                                    cbRestaurant
+                            );
+
+                            FirebaseDatabase.getInstance().getReference("Users")
+                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    progressDialog.dismiss();
+                                    if (task.isSuccessful()){
+                                        //user is successfully registered
+                                        //open the account page to set up their profile
+                                        finish();
+                                        startActivity(new Intent(getApplicationContext(), Main.class));
+                                    }else{
+                                        Toast.makeText(Register.this, "Registration failed. Please try again", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+
                         }else{
                             Toast.makeText(Register.this, "Registration failed. Please try again", Toast.LENGTH_SHORT).show();
                         }
-                        progressDialog.dismiss();
 
                     }
                 });

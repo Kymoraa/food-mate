@@ -1,5 +1,8 @@
 package msc.project.foodmate;
 
+import android.app.ProgressDialog;
+import android.graphics.Bitmap;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.content.ContentResolver;
@@ -22,8 +25,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -59,6 +64,20 @@ public class RestaurantAdd extends Fragment {
 
     private StorageTask uploadTask;
 
+    private String thisUri;
+
+    //Atif's tutorial
+    String mStoragePath = "cuisineUploads/";
+    String mDatabasePath = "cuisineUploads";
+    Uri mFilePathUri;
+
+    StorageReference mStorageReference;
+    DatabaseReference mDatabaseReference;
+
+    ProgressDialog mProgressDialog;
+
+    int IMAGE_REQUEST_CODE = 5;
+
     public RestaurantAdd() {
         // Required empty public constructor
     }
@@ -71,15 +90,23 @@ public class RestaurantAdd extends Fragment {
         View view = inflater.inflate(R.layout.restaurant_add, container, false);
 
         ivCuisine = view.findViewById(R.id.ivCuisine);
-        bChooseFile = view.findViewById(R.id.bChooseFile);
-        bChooseFile.setOnClickListener(new View.OnClickListener() {
+        ivCuisine.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openFileChooser();
             }
 
-
         });
+
+//        bChooseFile = view.findViewById(R.id.bChooseFile);
+//        bChooseFile.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                openFileChooser();
+//            }
+//
+//
+//        });
 
         etCuisineName = view.findViewById(R.id.etCuisineName);
         etPrice = view.findViewById(R.id.etPrice);
@@ -90,6 +117,13 @@ public class RestaurantAdd extends Fragment {
         storageReference = FirebaseStorage.getInstance().getReference("cuisineUploads");
         databaseReference = FirebaseDatabase.getInstance().getReference("cuisineUploads");
 
+        mStorageReference = FirebaseStorage.getInstance().getReference();
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference(mDatabasePath);
+
+        mProgressDialog = new ProgressDialog(getActivity());
+
+
+
         return view;
     }
 
@@ -97,7 +131,8 @@ public class RestaurantAdd extends Fragment {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, CHOOSE_FILE);
+      //  startActivityForResult(intent, CHOOSE_FILE);
+        startActivityForResult(Intent.createChooser(intent, "Select Image"), IMAGE_REQUEST_CODE);
     }
 
     @Override
@@ -105,10 +140,23 @@ public class RestaurantAdd extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
 
-        if(requestCode == CHOOSE_FILE && resultCode == RESULT_OK && data !=null && data.getData() != null ){
+        if(requestCode == IMAGE_REQUEST_CODE && resultCode == RESULT_OK && data !=null && data.getData() != null ){
 
-            imageUri = data.getData();
-            Picasso.get().load(imageUri).into(ivCuisine);
+            mFilePathUri = data.getData();
+
+            try{
+                //getting selected image into bitmap
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), mFilePathUri);
+                //set bitmap to imageview
+                ivCuisine.setImageBitmap(bitmap);
+
+            }catch (Exception e){
+
+                Toast.makeText(getActivity(), e.getMessage(),Toast.LENGTH_SHORT).show();
+
+            }
+
+          //  Picasso.get().load(imageUri).into(ivCuisine);
 
         }
     }
@@ -141,68 +189,164 @@ public class RestaurantAdd extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private String getFileExtension (Uri uri){
-        ContentResolver contentResolver = getActivity().getContentResolver();
-        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
-        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
-    }
+//    private String getFileExtension (Uri uri){
+//        ContentResolver contentResolver = getActivity().getContentResolver();
+//        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+//        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
+//    }
 
     private void uploadCuisine(){
 
-        if (imageUri != null){
+        //check whether the filepath is empty or not
+        if(mFilePathUri != null){
+            //setting the progress bar title
+            mProgressDialog.setTitle("Uploading...");
+            mProgressDialog.show();
 
-            StorageReference sRef = storageReference.child(System.currentTimeMillis() + "." +
-            getFileExtension(imageUri));
+            //create a second storage reference
 
-            uploadTask = sRef.putFile(imageUri)
+            StorageReference storageReference2 = mStorageReference.child(mStoragePath + System.currentTimeMillis() 
+                    + "." + getFileExtension(mFilePathUri));
+
+            //adding addOnSuccessListener to Storage Reference
+            storageReference2.putFile(mFilePathUri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    pbUpload.setProgress(0);
-                                }
-                            }, 500);
+                            //get the edit text values
+                            String name = etCuisineName.getText().toString().trim();
+                            String price = etPrice.getText().toString().trim();
+                            String description = etDescription.getText().toString().trim();
+                            String ingredients = etIngredients.getText().toString().trim();
 
-                            Toast.makeText(getActivity(), "Upload successful", Toast.LENGTH_LONG).show();
+                            //hide progress dialog
+                            mProgressDialog.dismiss();
 
-                            CuisineUploads cuisineUploads = new CuisineUploads(etCuisineName.getText().toString().trim(),
-                                    etPrice.getText().toString().trim(), etDescription.getText().toString().trim(),
-                                    etIngredients.getText().toString().trim(), taskSnapshot.getMetadata().getReference()
-                                    .getDownloadUrl().toString());
+                            Toast.makeText(getActivity(), "Upload successful", Toast.LENGTH_SHORT).show();
 
-                            String uploadID = databaseReference.push().getKey();
-                            databaseReference.child(uploadID).setValue(cuisineUploads);
+                            CuisineUploads cuisineUploads = new CuisineUploads(name, price, description, ingredients,
+                                    taskSnapshot.getStorage().getDownloadUrl().toString());
 
-                            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                            Fragment fragment = new RestaurantHome();
-                            transaction.replace(R.id.frameLayout, fragment);
-                            transaction.commit();
+                            //getting image ID
+                            String imageUploadID = mDatabaseReference.push().getKey();
+                            //uploading it into database reference
+                            mDatabaseReference.child(imageUploadID).setValue(cuisineUploads);
 
                         }
                     })
+                    //if something goes wrong
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            mProgressDialog.dismiss();
+
+                            //show error toast
+                            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
 
                         }
                     })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            double progressBar = (100.0 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
-                            pbUpload.setProgress((int) progressBar);
+                            mProgressDialog.setTitle("Uploading...");
 
                         }
                     });
 
         }else{
-            Toast.makeText(getActivity(), "No image selected", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Please select image", Toast.LENGTH_SHORT).show();
         }
+//
+//        if (imageUri != null){
+//
+//
+//
+//            StorageReference sRef = storageReference.child(System.currentTimeMillis() + "." +
+//            getFileExtension(imageUri));
+//
+//            sRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                @Override
+//                public void onSuccess(Uri uri) {
+//
+//                }
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception e) {
+//
+//                }
+//            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+//                @Override
+//                public void onComplete(@NonNull Task<Uri> task) {
+//                    thisUri = imageUri.toString();
+//                }
+//            });
+//
+//            sRef.putFile(imageUri)
+//                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                        @Override
+//                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                            Handler handler = new Handler();
+//                            handler.postDelayed(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    pbUpload.setProgress(0);
+//                                }
+//                            }, 500);
+//
+//                            Toast.makeText(getActivity(), "Upload successful", Toast.LENGTH_LONG).show();
+//
+//
+//
+//                            CuisineUploads cuisineUploads = new CuisineUploads(etCuisineName.getText().toString().trim(),
+//                                    etPrice.getText().toString().trim(), etDescription.getText().toString().trim(),
+//                                    etIngredients.getText().toString().trim(), thisUri);
+//
+//                                    //taskSnapshot.getUploadSessionUri().toString());
+//
+//                                    //taskSnapshot.getStorage().getDownloadUrl().toString());
+//
+//                            //taskSnapshot.getMetadata().getReference().getDownloadUrl().toString());
+//
+//
+//                            String uploadID = databaseReference.push().getKey();
+//                            databaseReference.child(uploadID).setValue(cuisineUploads);
+//
+//                            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+//                            Fragment fragment = new RestaurantHome();
+//                            transaction.replace(R.id.frameLayout, fragment);
+//                            transaction.commit();
+//
+//                        }
+//                    })
+//                    .addOnFailureListener(new OnFailureListener() {
+//                        @Override
+//                        public void onFailure(@NonNull Exception e) {
+//                            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+//
+//                        }
+//                    })
+//                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+//                        @Override
+//                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+//                            double progressBar = (100.0 * taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
+//                            pbUpload.setProgress((int) progressBar);
+//
+//                        }
+//                    });
+//
+//        }else{
+//            Toast.makeText(getActivity(), "No image selected", Toast.LENGTH_SHORT).show();
+//        }
 
+    }
+
+    //method to get the selected image file extension from the file path uri
+    private String getFileExtension(Uri uri) {
+        ContentResolver contentResolver = getActivity().getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+
+        //returning the file extension
+        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
     }
 
 

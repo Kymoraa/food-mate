@@ -38,17 +38,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Im
         CuisineUploads uploadCurrent = mCuisineUploads.get(position);
         Picasso.get()
                 .load(uploadCurrent.getImageUri())
-                .resize(50,50)
                 .into(holder.ivCuisine);
-
-//        Picasso picasso = new Picasso.Builder(mContext)
-//                .downloader(new )
-//                .build();
-
-//        Glide.with(mContext)
-//                .load(uploadCurrent.getImageUri())
-//                .into(holder.ivCuisine);
-
 
         holder.tvCuisineName.setText(uploadCurrent.getName());
         holder.tvPrice.setText(uploadCurrent.getPrice());
