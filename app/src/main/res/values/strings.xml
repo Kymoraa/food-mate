@@ -21,7 +21,8 @@
     <string name="nav_add">Add New</string>
     <string name="find_restaurant">Find a restaurant near you based on your requirements</string>
     <string name="search">Search Restaurants</string>
-    <string name="recent">Recently Viewed</string>
+    <string name="recent">Recently Added</string>
+    <string name="popular">Popular Choices</string>
     <string name="choose_file">Choose File</string>
     <string name="cuisine_name">Cuisine Name</string>
     <string name="price">Price</string>

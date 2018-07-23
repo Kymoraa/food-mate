@@ -80,18 +80,17 @@
 
         <Button
             android:id="@+id/bRegister"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="50dp"
             android:text="@string/register"
-            android:background="@drawable/ghost_button"
-            android:textColor="@color/orange700"
+            android:background="@color/orange700"
+            android:textColor="@color/white"
+            android:layout_centerHorizontal="true"
+            android:elevation="3dp"
             android:textAllCaps="true"
             android:textSize="15sp"
             android:layout_below="@+id/cbRestaurant"
-            android:layout_alignRight="@+id/etPassword"
-            android:layout_alignEnd="@+id/etPassword"
-            android:layout_alignLeft="@+id/etPassword"
-            android:layout_alignStart="@+id/etPassword" />
+           />
 
 
 

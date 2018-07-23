@@ -22,13 +22,9 @@ import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -54,9 +50,9 @@ public class RestaurantAdd extends Fragment {
     private static final int CHOOSE_FILE = 1;
 
     private ImageView ivCuisine;
-    private Button bChooseFile;
+   // private Button bChooseFile;
     private EditText etCuisineName, etPrice, etDescription, etIngredients;
-    private ProgressBar pbUpload;
+   // private ProgressBar pbUpload;
     private Uri imageUri;
 
     private StorageReference storageReference;
@@ -112,7 +108,7 @@ public class RestaurantAdd extends Fragment {
         etPrice = view.findViewById(R.id.etPrice);
         etDescription = view.findViewById(R.id.etDescription);
         etIngredients = view.findViewById(R.id.etIngredients);
-        pbUpload = view.findViewById(R.id.pbUpload);
+        //pbUpload = view.findViewById(R.id.pbUpload);
 
         storageReference = FirebaseStorage.getInstance().getReference("cuisineUploads");
         databaseReference = FirebaseDatabase.getInstance().getReference("cuisineUploads");

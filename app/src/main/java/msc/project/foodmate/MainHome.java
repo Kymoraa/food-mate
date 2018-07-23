@@ -4,10 +4,25 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.GridView;
+import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -29,8 +44,17 @@ public class MainHome extends Fragment {
     private String mParam2;
 
     private Button bSearch;
-
     private OnFragmentInteractionListener mListener;
+
+    //for the recyclerView
+    FirebaseDatabase database;
+    DatabaseReference myRef ;
+    List<RecentModel> list;
+    RecyclerView recycle;
+
+
+
+
 
     public MainHome() {
         // Required empty public constructor
@@ -81,9 +105,48 @@ public class MainHome extends Fragment {
                         .addToBackStack(null)
                         .commit();
 
-
             }
         });
+
+
+        //Populate the recycler view from Firebase
+        recycle = view.findViewById(R.id.rvRecent);
+
+        RecyclerView.LayoutManager recyce = new GridLayoutManager(getActivity(),2);
+        /// RecyclerView.LayoutManager recyce = new LinearLayoutManager(MainActivity.this);
+        // recycle.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
+        recycle.setLayoutManager(recyce);
+        recycle.setItemAnimator( new DefaultItemAnimator());
+
+        list = new ArrayList<>();
+
+        myRef = FirebaseDatabase.getInstance().getReference("cuisineUploads");
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
+
+                    RecentModel value = dataSnapshot1.getValue(RecentModel.class);
+                    list.add(value);
+
+                }
+
+                RecentAdapter recentAdapter = new RecentAdapter(list, getActivity());
+
+                recycle.setAdapter(recentAdapter);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
         return view;
     }

@@ -67,12 +67,6 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
                     loadFragment(fragment);
                     return true;
 
-                case R.id.nav_history:
-                    actionBar.setTitle("History");
-                    fragment = new MainHistory();
-                    loadFragment(fragment);
-                    return true;
-
                 case R.id.nav_favourite:
                     actionBar.setTitle("Favourites");
                     fragment = new MainFavourites();

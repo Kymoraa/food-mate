@@ -53,19 +53,17 @@
 
     <Button
         android:id="@+id/bSignin"
-        android:layout_width="wrap_content"
+        android:layout_width="170dp"
         android:layout_height="50dp"
-        android:text="@string/sign_in"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/ghost_button"
-        android:textColor="@color/orange700"
-        android:textAllCaps="true"
-        android:textSize="15sp"
         android:layout_below="@+id/etPassword"
-        android:layout_alignRight="@+id/etPassword"
-        android:layout_alignEnd="@+id/etPassword"
-        android:layout_alignLeft="@+id/etPassword"
-        android:layout_alignStart="@+id/etPassword" />
+        android:layout_centerHorizontal="true"
+        android:elevation="3dp"
+        android:layout_marginTop="29dp"
+        android:background="@color/orange700"
+        android:text="@string/sign_in"
+        android:textAllCaps="true"
+        android:textColor="@color/white"
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/tvRegister"

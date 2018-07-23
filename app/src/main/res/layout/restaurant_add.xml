@@ -1,49 +1,42 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:isScrollContainer="true"
     tools:context="msc.project.foodmate.RestaurantAdd">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="fill_parent"
+        android:isScrollContainer="true"
         android:padding="5dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="fill_parent">
 
             <ImageView
                 android:id="@+id/ivCuisine"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_alignParentStart="true"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
                 android:layout_alignParentTop="true"
-                android:layout_marginStart="25dp"
-                android:layout_marginTop="15dp"
-                android:background="@drawable/ghost_button" />
-
-            <Button
-                android:id="@+id/bChooseFile"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_alignStart="@+id/ivCuisine"
-                android:layout_below="@+id/ivCuisine"
-                android:layout_marginTop="13dp"
+                android:layout_marginEnd="14dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/ghost_button"
-                android:text="@string/choose_file"
+                android:scaleType="fitXY"
+               />
 
-                android:textColor="@color/orange700"
-                android:textSize="15sp" />
 
             <EditText
                 android:id="@+id/etCuisineName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/ivCuisine"
+                android:layout_marginTop="14dp"
                 android:layout_marginEnd="14dp"
                 android:layout_marginStart="14dp"
-                android:layout_toEndOf="@+id/ivCuisine"
+                android:layout_below="@+id/ivCuisine"
                 android:backgroundTint="@color/orange700"
                 android:ems="10"
                 android:hint="@string/cuisine_name"
@@ -58,7 +51,6 @@
                 android:layout_marginEnd="14dp"
                 android:layout_marginStart="14dp"
                 android:layout_marginTop="14dp"
-                android:layout_toEndOf="@+id/ivCuisine"
                 android:backgroundTint="@color/orange700"
                 android:ems="10"
                 android:hint="@string/price"
@@ -69,7 +61,7 @@
                 android:id="@+id/etDescription"
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
-                android:layout_below="@+id/bChooseFile"
+                android:layout_below="@+id/etPrice"
                 android:layout_marginEnd="14dp"
                 android:layout_marginStart="14dp"
                 android:layout_marginTop="14dp"
@@ -95,18 +87,10 @@
                 android:inputType="text|textMultiLine"
                 android:textColor="@color/grey" />
 
-
-            <ProgressBar
-                android:id="@+id/pbUpload"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginTop="10dp"
+                android:layout_height="100dp"
                 android:layout_below="@+id/etIngredients"/>
-
-
 
 
 
