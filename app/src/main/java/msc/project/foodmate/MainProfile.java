@@ -4,6 +4,9 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +39,9 @@ public class MainProfile extends Fragment {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private TextView tvUser;
+
+    private CardView cvDiets, cvIngredients, cvAllergens;
+    private ActionBar aBar;
 
 
 
@@ -84,6 +90,55 @@ public class MainProfile extends Fragment {
             if (firebaseAuth.getCurrentUser() != null) {
                 tvUser.setText(firebaseUser.getEmail());
             }
+
+        //actions when the cardviews are clicked
+
+        aBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+
+
+
+        cvDiets = view.findViewById(R.id.cvDiets);
+        cvDiets.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                aBar.setTitle(R.string.diets);
+                Diets diets = new Diets();
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.frameLayout, diets,"Find This Fragment")
+                        .addToBackStack(null)
+                        .commit();
+
+            }
+        });
+
+        cvIngredients = view.findViewById(R.id.cvIngredients);
+        cvIngredients.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                aBar.setTitle(R.string.ingredients);
+                Ingredients ingredients = new Ingredients();
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.frameLayout, ingredients,"Find This Fragment")
+                        .addToBackStack(null)
+                        .commit();
+
+            }
+        });
+
+        cvAllergens = view.findViewById(R.id.cvAllergens);
+        cvAllergens.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                aBar.setTitle(R.string.allergens);
+                Allergens allergens = new Allergens();
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.frameLayout, allergens,"Find This Fragment")
+                        .addToBackStack(null)
+                        .commit();
+
+            }
+        });
+
 
         return view;
 

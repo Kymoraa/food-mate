@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -25,7 +26,8 @@ import com.google.firebase.auth.FirebaseUser;
 public class Main extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
         ,MainHome.OnFragmentInteractionListener,MainHistory.OnFragmentInteractionListener,
         MainFavourites.OnFragmentInteractionListener, MainProfile.OnFragmentInteractionListener,
-        SearchResults.OnFragmentInteractionListener{
+        SearchResults.OnFragmentInteractionListener, Diets.OnFragmentInteractionListener,
+        Ingredients.OnFragmentInteractionListener, Allergens.OnFragmentInteractionListener{
 
     private ActionBar actionBar;
     private FirebaseAuth firebaseAuth;
@@ -43,14 +45,18 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
 
 
 
-        actionBar = getSupportActionBar();
-
-        BottomNavigationView navigationView = (BottomNavigationView) findViewById(R.id.navigationView);
-        navigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
         // load the home fragment by default
+        actionBar = getSupportActionBar();
         actionBar.setTitle("Food Mate");
         loadFragment(new MainHome());
+
+        BottomNavigationView navigationView = (BottomNavigationView) findViewById(R.id.navigationView);
+        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) navigationView.getLayoutParams();
+        layoutParams.setBehavior(new BottomNavigationViewBehavior());
+        navigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+
+
 
     }
 

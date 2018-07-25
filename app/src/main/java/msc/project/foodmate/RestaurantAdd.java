@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -119,7 +120,6 @@ public class RestaurantAdd extends Fragment {
         mProgressDialog = new ProgressDialog(getActivity());
 
 
-
         return view;
     }
 
@@ -193,6 +193,7 @@ public class RestaurantAdd extends Fragment {
 
     private void uploadCuisine(){
 
+
         //check whether the filepath is empty or not
         if(mFilePathUri != null){
             //setting the progress bar title
@@ -222,6 +223,10 @@ public class RestaurantAdd extends Fragment {
 
                             CuisineUploads cuisineUploads = new CuisineUploads(name, price, description, ingredients,
                                     taskSnapshot.getStorage().getDownloadUrl().toString());
+
+                            String printScreen = taskSnapshot.getStorage().getDownloadUrl().toString();
+
+
 
                             //getting image ID
                             String imageUploadID = mDatabaseReference.push().getKey();

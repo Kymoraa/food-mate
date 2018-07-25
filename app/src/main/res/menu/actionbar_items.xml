@@ -5,6 +5,7 @@
             android:id="@+id/menu_upload"
             android:title="Upload"
             app:showAsAction="always"
+            android:icon="@drawable/ic_upload"
             />
 
 </menu>
