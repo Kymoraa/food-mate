@@ -7,12 +7,10 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.GridView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -49,7 +47,7 @@ public class MainHome extends Fragment {
     //for the recyclerView
     FirebaseDatabase database;
     DatabaseReference myRef ;
-    List<RecentModel> list;
+    List<PopularModel> list;
     RecyclerView recycle;
 
 
@@ -129,7 +127,7 @@ public class MainHome extends Fragment {
                 // whenever data at this location is updated.
                 for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
 
-                    RecentModel value = dataSnapshot1.getValue(RecentModel.class);
+                    PopularModel value = dataSnapshot1.getValue(PopularModel.class);
                     list.add(value);
 
                 }

@@ -52,7 +52,7 @@ public class RestaurantAdd extends Fragment {
 
     private ImageView ivCuisine;
    // private Button bChooseFile;
-    private EditText etCuisineName, etPrice, etDescription, etIngredients;
+    private EditText etCuisineName, etPrice, etDescription, etIngredients, etDiet;
    // private ProgressBar pbUpload;
     private Uri imageUri;
 
@@ -109,6 +109,7 @@ public class RestaurantAdd extends Fragment {
         etPrice = view.findViewById(R.id.etPrice);
         etDescription = view.findViewById(R.id.etDescription);
         etIngredients = view.findViewById(R.id.etIngredients);
+        etDiet = view.findViewById(R.id.etDiet);
         //pbUpload = view.findViewById(R.id.pbUpload);
 
         storageReference = FirebaseStorage.getInstance().getReference("cuisineUploads");
@@ -215,6 +216,7 @@ public class RestaurantAdd extends Fragment {
                             String price = etPrice.getText().toString().trim();
                             String description = etDescription.getText().toString().trim();
                             String ingredients = etIngredients.getText().toString().trim();
+                            String diet = etDiet.getText().toString().trim();
 
                             //hide progress dialog
                             mProgressDialog.dismiss();
@@ -222,7 +224,7 @@ public class RestaurantAdd extends Fragment {
                             Toast.makeText(getActivity(), "Upload successful", Toast.LENGTH_SHORT).show();
 
                             CuisineUploads cuisineUploads = new CuisineUploads(name, price, description, ingredients,
-                                    taskSnapshot.getStorage().getDownloadUrl().toString());
+                                    diet, taskSnapshot.getStorage().getDownloadUrl().toString());
 
                             String printScreen = taskSnapshot.getStorage().getDownloadUrl().toString();
 

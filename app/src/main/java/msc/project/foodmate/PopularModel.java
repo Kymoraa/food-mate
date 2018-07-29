@@ -4,11 +4,11 @@ package msc.project.foodmate;
  * Created by Jackie Moraa on 7/22/2018.
  */
 
-public class RecentModel {
+public class PopularModel {
 
     public String imageUri, name, price,description, ingredients;
 
-    public RecentModel() {
+    public PopularModel() {
     }
 
     public String getImageUri() {

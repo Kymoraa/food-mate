@@ -92,7 +92,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
     private void registerUser(){
 
-        String email = etEmail.getText().toString().trim();
+        final String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
         String confirmPassword = etConfirmPassword.getText().toString().trim();
 
@@ -149,7 +149,12 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                             //user is successfully registered
                             //open the account page to set up their profile
                             finish();
-                            startActivity(new Intent(getApplicationContext(), Main.class));
+
+                            if(email.equals("admin@restaurant.com")){
+                                startActivity(new Intent(getApplicationContext(), RestaurantMain.class));
+                            }else {
+                                startActivity(new Intent(getApplicationContext(), Main.class));
+                            }
                         }else{
                             Toast.makeText(Register.this, "Registration failed. Please try again", Toast.LENGTH_SHORT).show();
                         }

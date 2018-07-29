@@ -13,13 +13,11 @@
         <activity
             android:name=".Login"
             android:theme="@style/AppTheme.NoActionBar">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".Register"
@@ -31,7 +29,18 @@
         <activity
             android:name=".RestaurantMain"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="stateVisible|adjustPan"/>
+            android:windowSoftInputMode="stateVisible|adjustPan" />
+
+        <activity
+            android:name=".CuisineDetails"
+            android:theme="@style/AppTheme"
+            android:label="@string/cuisinesDetails"
+            android:parentActivityName=".Main"/>
+
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/AppTheme"/>
 
     </application>
 

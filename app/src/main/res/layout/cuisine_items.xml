@@ -10,6 +10,7 @@
     app:cardUseCompatPadding="true">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -21,15 +22,10 @@
             android:layout_height="wrap_content"
             android:text="@string/cuisine_name"
             android:typeface="serif"
-            android:textSize="15sp" />
+            android:layout_marginBottom="3dp"
+            android:textSize="15sp"
+            />
 
-        <TextView
-            android:id="@+id/tvPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:typeface="serif"
-            android:text="@string/price"
-            android:textSize="12sp" />
 
         <ImageView
             android:id="@+id/ivCuisine"
@@ -38,6 +34,30 @@
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"
             android:background="@drawable/image_loading"/>
+
+        <TextView
+            android:id="@+id/tvIngredients"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:typeface="serif"
+            android:text="@string/ingredients"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvDiets"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:typeface="serif"
+            android:text="@string/diets"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:typeface="serif"
+            android:text="@string/price"
+            android:textSize="12sp" />
 
     </LinearLayout>
 

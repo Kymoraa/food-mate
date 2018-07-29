@@ -5,14 +5,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,10 +23,10 @@ import java.util.List;
 
 public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.MyHolder>{
 
-    List<RecentModel> list;
+    List<PopularModel> list;
     Context context;
 
-    public RecentAdapter(List<RecentModel> list, Context context) {
+    public RecentAdapter(List<PopularModel> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -45,7 +42,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.MyHolder>{
 
     @Override
     public void onBindViewHolder(RecentAdapter.MyHolder holder, int position) {
-        RecentModel mylist = list.get(position);
+        PopularModel mylist = list.get(position);
 
         Picasso.get()
                 .load(mylist.getImageUri())
@@ -109,9 +106,9 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.MyHolder>{
 
 //previous tutorial
 //    Context c;
-//    ArrayList<RecentModel> recentModels;
+//    ArrayList<PopularModel> recentModels;
 //
-//    public RecentAdapter(Context c, ArrayList<RecentModel> recentModels) {
+//    public RecentAdapter(Context c, ArrayList<PopularModel> recentModels) {
 //        this.c = c;
 //        this.recentModels = recentModels;
 //    }
@@ -141,7 +138,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.MyHolder>{
 //        TextView tvName = (TextView) convertView.findViewById(R.id.tvName);
 //        TextView tvPrice = (TextView) convertView.findViewById(R.id.tvPrice);
 //
-//        final RecentModel gvModel = (RecentModel)this.getItem(position);
+//        final PopularModel gvModel = (PopularModel)this.getItem(position);
 //
 //        Picasso.get()
 //                .load(gvModel.getImageUri())

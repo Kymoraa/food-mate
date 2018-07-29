@@ -6,19 +6,20 @@ package msc.project.foodmate;
 
 public class CuisineUploads {
 
-    private String etCuisineName, etPrice, etDescription, etIngredients, ivImageUri;
+    private String etCuisineName, etPrice, etDescription, etIngredients, ivImageUri, etDiet;
 
     public CuisineUploads(){
         //this is an empty constructor
         //needed for FireBase
     }
 
-    public CuisineUploads(String cuisineName, String price, String description, String ingredients, String imageUri){
+    public CuisineUploads(String cuisineName, String price, String description, String ingredients, String imageUri, String diet){
 
         etCuisineName = cuisineName;
         etPrice = price;
         etDescription = description;
         etIngredients = ingredients;
+        etDiet = diet;
         ivImageUri = imageUri;
     }
 
@@ -60,5 +61,13 @@ public class CuisineUploads {
 
     public void setImageUri (String imageUri){
         ivImageUri = imageUri;
+    }
+
+    public String getDiet() {
+        return etDiet;
+    }
+
+    public void setdiet(String diet) {
+        etDiet = diet;
     }
 }

@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,6 +29,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 /**
@@ -45,12 +52,13 @@ public class Diets extends Fragment {
     private ArrayAdapter<String>adapter;
 
     SharedPreferences sharedPreferences;
-    public static final String MYPREFERENCES = "DietsSelections";
+    public static final String MYPREFERENCES = "dietPreferences";
     ArrayList<String> selectedItems = new ArrayList<>();
 
     public Diets() {
         // Required empty public constructor
     }
+
 
 
     @Override
@@ -60,9 +68,31 @@ public class Diets extends Fragment {
         View view = inflater.inflate(R.layout.diets, container, false);
 
         lvDiets = view.findViewById(R.id.lvDiets);
-        adapter = new ArrayAdapter<String>(getActivity(), R.layout.listview_items, R.id.tvList, arrayList);
-
+        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_multiple_choice, arrayList);
+        lvDiets.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         lvDiets.setAdapter(adapter);
+
+        sharedPreferences = getActivity().getSharedPreferences(MYPREFERENCES, Context.MODE_PRIVATE);
+
+//        Set<String> checkedItemsSource = sharedPreferences.getStringSet("checked_items", new HashSet<String>());
+//        SparseBooleanArray checkedItems = convertToCheckedItems(checkedItemsSource);
+//        for (int i = 0; i < checkedItems.size(); i++) {
+//            int checkedPosition = checkedItems.keyAt(i);
+//            lvDiets.setItemChecked(checkedPosition, true);
+//
+//        }
+
+        //Opening shared preference in private mode
+        //sharedPreferences = getActivity().getSharedPreferences(MYPREFERENCES,Context.MODE_PRIVATE);
+        //sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+
+            if(sharedPreferences.contains(MYPREFERENCES)){
+                loadSelections();
+
+                //System.out.println("This are the shared preferences: " + MYPREFERENCES);
+
+            }
 
         //Firebase
         databaseReference = FirebaseDatabase.getInstance().getReference("dietsList");
@@ -101,6 +131,43 @@ public class Diets extends Fragment {
         return view;
     }
 
+    //checked state of the list view
+//    @Override
+//    public void onDestroy() {
+//        super.onDestroy();
+//        SparseBooleanArray checkedItems = lvDiets.getCheckedItemPositions();
+//        Set<String> stringSet = convertToStringSet(checkedItems);
+//        sharedPreferences.edit()
+//                .putStringSet("checked_items", stringSet)
+//                .apply();
+//    }
+
+//    private SparseBooleanArray convertToCheckedItems(Set<String> checkedItems) {
+//        SparseBooleanArray array = new SparseBooleanArray();
+//        for(String itemPositionStr : checkedItems) {
+//            int position = Integer.parseInt(itemPositionStr);
+//            array.put(position, true);
+//        }
+//
+//        return array;
+//    }
+
+//    private Set<String> convertToStringSet(SparseBooleanArray checkedItems) {
+//        Set<String> result = new HashSet<>();
+//        for (int i = 0; i < checkedItems.size(); i++) {
+//            result.add(String.valueOf(checkedItems.keyAt(i)));
+//        }
+//
+//        return result;
+//    }
+
+    //Menu items
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // TODO Add your menu entries here
@@ -112,15 +179,84 @@ public class Diets extends Fragment {
         int id = item.getItemId();
 
         if (id == R.id.menu_save) {
-            //save selections to preferences
-            saveSelections();
+
+            String selected = "";
+            int cntChoice = lvDiets.getCount();
+            SparseBooleanArray sparseBooleanArray = lvDiets.getCheckedItemPositions();
+
+            for (int i = 0; i < cntChoice; i++) {
+
+                if (sparseBooleanArray.get(i)) {
+                    selected += lvDiets.getItemAtPosition(i).toString() + "\n";
+                    System.out.println("Checking list while adding:" + lvDiets.getItemAtPosition(i).toString());
+
+                    Toast.makeText(getActivity(), "Selected", Toast.LENGTH_SHORT).show();
+
+                    saveSelections();
+
+                }
+
+            }
         }
+
         return super.onOptionsItemSelected(item);
     }
 
-    public void saveSelections(){
+        public void saveSelections() {
 
-    }
+            //save the selections in the shared preference in private mode for the user
+            SharedPreferences sharedPreferences = getActivity().getPreferences(MODE_PRIVATE);
+            SharedPreferences.Editor preferenceEditor = sharedPreferences.edit();
+            String savedItems = getSavedItems();
+            preferenceEditor.putString(MYPREFERENCES, savedItems);
+            preferenceEditor.commit();
+
+            Toast.makeText(getActivity(), "Saved", Toast.LENGTH_LONG).show();
+        }
+
+
+        public String getSavedItems(){
+            String savedItems = "";
+            int count = this.lvDiets.getAdapter().getCount();
+
+            for (int i =0; i<count; i++){
+                if(this.lvDiets.isItemChecked(i)){
+                    if(savedItems.length()>0){
+                        savedItems+="," + this.lvDiets.getItemAtPosition(i);
+                    }else{
+                        savedItems+=this.lvDiets.getItemAtPosition(i);
+                    }
+                }
+            }
+
+            System.out.println("Saved Items are: " + savedItems);
+            return savedItems;
+
+        }
+
+    public void loadSelections(){
+        //if selections were previously saved, load them
+        SharedPreferences sharedPreferences = getActivity().getPreferences(MODE_PRIVATE);
+        if(sharedPreferences.contains(MYPREFERENCES)){
+            String savedItems = sharedPreferences.getString(MYPREFERENCES, "");
+            selectedItems.addAll(Arrays.asList(savedItems.split(",")));
+
+            int count = this.lvDiets.getAdapter().getCount();
+            for (int i =0; i<count; i++){
+                String currentItem = (String) this.lvDiets.getAdapter().getItem(i);
+
+                if(selectedItems.contains(currentItem)){
+                    this.lvDiets.setItemChecked(i, true);
+
+                    Toast.makeText(getActivity(), "Current Item: " + currentItem, Toast.LENGTH_LONG).show();
+                }else{
+                    this.lvDiets.setItemChecked(i, false);
+                }
+            }
+
+        }
+
+       }
 
 
 

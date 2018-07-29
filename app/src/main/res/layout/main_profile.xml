@@ -28,21 +28,17 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="250dp"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="25dp"
-                android:src="@drawable/photo_circle" />
+            android:orientation="vertical"
+            android:background="@drawable/food_img1">
 
             <TextView
                 android:id="@+id/tvUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
+                android:text="User Name"
+                android:textColor="@color/white"
+                android:layout_marginTop="100dp"
                 android:textSize="17sp"
                 android:typeface="serif" />
         </LinearLayout>
