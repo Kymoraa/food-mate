@@ -17,5 +17,12 @@
     <color name="light_grey">#DCDCDC</color>
     <color name="pink2">#ffeeff</color>
     <color name="green2">#e8f5e9</color>
+    <color name="grey3">#afadad</color>
+    <color name="grey4">#7D7D7D</color>
+
+    <color name="msg_no_notes">#999</color>
+    <color name="hint_enter_note">#89c3c3c3</color>
+    <color name="timestamp">#858585</color>
+    <color name="note_list_text">#232323</color>
 
 </resources>

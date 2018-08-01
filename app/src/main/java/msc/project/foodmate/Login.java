@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -12,6 +13,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +32,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
     private TextView tvRegister, tvGuest;
     private ProgressDialog progressDialog;
     private FirebaseAuth firebaseAuth;
+    private LinearLayout linearLayout;
 
     public final Pattern EMAIL_ADDRESS_PATTERN = Pattern.compile(
             "[a-zA-Z0-9+._%-+]{1,256}" +
@@ -46,6 +49,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
 
+        linearLayout = findViewById(R.id.linearLayout);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -53,7 +57,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
         if (firebaseAuth.getCurrentUser() != null){
             //user is already logged in. start main activity
             finish();
-            startActivity(new Intent(getApplicationContext(), Main.class));
+            if(firebaseAuth.getCurrentUser().getEmail().equals("admin@restaurant.com")){
+                startActivity(new Intent(getApplicationContext(), RestaurantMain.class));
+            }else {
+                startActivity(new Intent(getApplicationContext(), Main.class));
+            }
         }
 
 
@@ -104,7 +112,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
 
     //method to log in the users already registered
     private void loginUser(){
-        String email = etEmail.getText().toString().trim();
+        final String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
         //field validations
@@ -144,10 +152,15 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
                         if (task.isSuccessful()){
                             //user is successfully registered
                             finish();
-                            Intent intent = new Intent(Login.this, Main.class);
-                            startActivity(intent);
+                            if(email.equals("admin@restaurant.com")){
+                                startActivity(new Intent(getApplicationContext(), RestaurantMain.class));
+                            }else {
+                                startActivity(new Intent(getApplicationContext(), Main.class));
+                            }
                         }else{
-                            Toast.makeText(Login.this, "Login failed. Please try again", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(Login.this, "Login failed. Please try again", Toast.LENGTH_SHORT).show();
+                            Snackbar snackbar = Snackbar.make(linearLayout, "Login failed. Please try again", Snackbar.LENGTH_LONG);
+                            snackbar.show ();
                         }
 
                     }

@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -24,8 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
  */
 
 public class Main extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
-        ,MainHome.OnFragmentInteractionListener,MainHistory.OnFragmentInteractionListener,
-        MainFavourites.OnFragmentInteractionListener, MainProfile.OnFragmentInteractionListener,
+        ,MainHome.OnFragmentInteractionListener, MainFavourites.OnFragmentInteractionListener, MainProfile.OnFragmentInteractionListener,
         SearchResults.OnFragmentInteractionListener, Diets.OnFragmentInteractionListener,
         Ingredients.OnFragmentInteractionListener, Allergens.OnFragmentInteractionListener{
 

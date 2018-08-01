@@ -4,13 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,8 +26,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -171,7 +165,7 @@ public class Diets extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // TODO Add your menu entries here
-        inflater.inflate(R.menu.save_selection, menu);
+        inflater.inflate(R.menu.profile_menu, menu);
     }
 
     @Override
@@ -197,6 +191,11 @@ public class Diets extends Fragment {
                 }
 
             }
+        }else if(id == R.id.menu_delete){
+            sharedPreferences = getActivity().getSharedPreferences("MYPREFERENCE", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.commit();
         }
 
         return super.onOptionsItemSelected(item);

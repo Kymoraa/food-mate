@@ -4,9 +4,35 @@
     android:layout_height="match_parent"
     tools:context="msc.project.foodmate.SearchResults">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="370dp"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/et_search"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:textSize="17sp"
+            android:hint="@string/search_results"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:textColor="@color/grey3"
+            android:typeface="serif"
+            android:cursorVisible="true"
+            android:drawableLeft="@android:drawable/ic_menu_search"/>
+
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
+        android:layout_below="@id/etSearch"
         android:layout_height="match_parent"/>
+
+    </RelativeLayout>
 
 </FrameLayout>

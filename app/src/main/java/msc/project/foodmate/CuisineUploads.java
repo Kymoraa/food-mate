@@ -23,51 +23,51 @@ public class CuisineUploads {
         ivImageUri = imageUri;
     }
 
-    public String getName (){
+    public String getName() {
         return etCuisineName;
     }
 
-    public void setName (String cuisineName){
-        etCuisineName = cuisineName;
+    public void setName(String etCuisineName) {
+        this.etCuisineName = etCuisineName;
     }
 
-    public String getPrice (){
+    public String getPrice() {
         return etPrice;
     }
 
-    public void setPrice (String price){
-        etPrice = price;
+    public void setPrice(String etPrice) {
+        this.etPrice = etPrice;
     }
 
-    public String getDescription (){
+    public String getDescription() {
         return etDescription;
     }
 
-    public void setDescription (String description){
-        etDescription = description;
+    public void setDescription(String etDescription) {
+        this.etDescription = etDescription;
     }
 
-    public String getIngredients (){
+    public String getIngredients() {
         return etIngredients;
     }
 
-    public void setIngredients (String ingredients){
-        etIngredients = ingredients;
+    public void setIngredients(String etIngredients) {
+        this.etIngredients = etIngredients;
     }
 
-    public String getImageUri (){
+    public String getImageUri() {
         return ivImageUri;
     }
 
-    public void setImageUri (String imageUri){
-        ivImageUri = imageUri;
+    public void setImageUri(String ivImageUri) {
+        this.ivImageUri = ivImageUri;
     }
 
     public String getDiet() {
         return etDiet;
     }
 
-    public void setdiet(String diet) {
-        etDiet = diet;
+    public void setDiet(String etDiet) {
+        this.etDiet = etDiet;
     }
 }

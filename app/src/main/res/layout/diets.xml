@@ -6,6 +6,7 @@
 
     <!-- TODO: Update blank fragment layout -->
 
+
     <ListView
         android:id="@+id/lvDiets"
         android:layout_width="fill_parent"
@@ -14,6 +15,7 @@
         android:paddingRight="10dp"
         android:layout_marginBottom="50dp">
     </ListView>
+
 
 
 </FrameLayout>

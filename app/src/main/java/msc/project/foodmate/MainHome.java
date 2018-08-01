@@ -1,8 +1,10 @@
 package msc.project.foodmate;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -43,6 +45,8 @@ public class MainHome extends Fragment {
 
     private Button bSearch;
     private OnFragmentInteractionListener mListener;
+
+    private ProgressDialog progressDialog;
 
     //for the recyclerView
     FirebaseDatabase database;
@@ -92,16 +96,38 @@ public class MainHome extends Fragment {
        // return inflater.inflate(R.layout.main_home, container, false);
         View view = inflater.inflate(R.layout.main_home, container, false);
 
+        progressDialog = new ProgressDialog(getActivity());
+
+
         bSearch = view.findViewById(R.id.bSearch);
         bSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                progressDialog.setCancelable(false);
+                progressDialog.setMessage("Loading...");
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.show();
+
+                Runnable progressRunnable = new Runnable() {
+
+                    @Override
+                    public void run() {
+                        progressDialog.cancel();
+                    }
+                };
+
+                Handler pdCanceller = new Handler();
+                pdCanceller.postDelayed(progressRunnable, 3000);
+
 
                 SearchResults searchResults = new SearchResults();
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .replace(R.id.frameLayout, searchResults,"Find This Fragment")
                         .addToBackStack(null)
                         .commit();
+
+
 
             }
         });
@@ -132,9 +158,8 @@ public class MainHome extends Fragment {
 
                 }
 
-                RecentAdapter recentAdapter = new RecentAdapter(list, getActivity());
-
-                recycle.setAdapter(recentAdapter);
+                PopularAdapter popularAdapter = new PopularAdapter(list, getActivity());
+                recycle.setAdapter(popularAdapter);
 
             }
 

@@ -19,8 +19,8 @@
     <string name="nav_favourites">Favourites</string>
     <string name="nav_profile">Profile</string>
     <string name="nav_add">Add New</string>
-    <string name="find_restaurant">Find a restaurant near you based on your requirements</string>
-    <string name="search">Search Restaurants</string>
+    <string name="find_restaurant">Find tasty cuisines based on your dietary requirements</string>
+    <string name="search">Search Cuisines</string>
     <string name="recent">Recently Added</string>
     <string name="popular">Popular Choices</string>
     <string name="choose_file">Choose File</string>
@@ -34,8 +34,15 @@
     <string name="diets">Diets</string>
     <string name="restaurantName">Restaurant Name</string>
     <string name="call">Call</string>
-    <string name="directions">Directions</string>
+    <string name="map">Map</string>
     <string name="cuisinesDetails">Cuisine Details</string>
+    <string name="brel">Brel</string>
+    <string name="save">Save</string>
+    <string name="filter">Filter</string>
+    <string name="search_results">Search...</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
 
 
     <!-- TODO: Remove or change this placeholder text -->

@@ -12,26 +12,27 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Jackie Moraa on 7/12/2018.
  */
 
-public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.ImageViewHolder> {
+public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ImageViewHolder> {
 
     private Context mContext;
     private List<CuisineUploads> mCuisineUploads;
 
 
-    public RestaurantAdapter(Context context, List<CuisineUploads> cuisineUploads){
+    public SearchAdapter(Context context, List<CuisineUploads> cuisineUploads){
         mContext = context;
         mCuisineUploads = cuisineUploads;
     }
 
     @Override
     public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.cuisine_items, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_items, parent, false);
 
 
         return  new ImageViewHolder(v);
@@ -47,12 +48,23 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Im
         holder.tvCuisineName.setText(uploadCurrent.getName());
         holder.tvPrice.setText("Price: " + uploadCurrent.getPrice());
         holder.tvIngredients.setText("Ingredients: " + uploadCurrent.getIngredients());
-        holder.tvDiets.setText("Diet: " + uploadCurrent.getDiet());
+        holder.tvDiets.setText(uploadCurrent.getDiet());
+        holder.tvDescription.setText(uploadCurrent.getDescription());
 
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 System.out.println("Clicked on: " + mCuisineUploads.get(position));
+
+                Intent intent = new Intent(mContext, CuisineDetails.class);
+                intent.putExtra("imageUrl", uploadCurrent.getImageUri());
+                intent.putExtra("name", uploadCurrent.getName());
+                intent.putExtra("description", uploadCurrent.getDescription());
+                intent.putExtra("price", uploadCurrent.getPrice());
+                intent.putExtra("ingredients", uploadCurrent.getIngredients());
+                mContext.startActivity(intent);
+
+
             }
         });
 
@@ -66,7 +78,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Im
     public class ImageViewHolder extends RecyclerView.ViewHolder{
 
         public ImageView ivCuisine;
-        public TextView tvCuisineName, tvPrice, tvIngredients, tvDiets;
+        public TextView tvCuisineName, tvPrice, tvIngredients, tvDiets, tvDescription;
         private LinearLayout linearLayout;
 
         public ImageViewHolder(View itemView) {
@@ -77,8 +89,18 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Im
             tvPrice = itemView.findViewById(R.id.tvPrice);
             tvIngredients = itemView.findViewById(R.id.tvIngredients);
             tvDiets = itemView.findViewById(R.id.tvDiets);
+            tvDescription = itemView.findViewById(R.id.tvDescription);
             linearLayout = itemView.findViewById(R.id.linearLayout);
 
         }
     }
+
+    public void searchList(List<CuisineUploads> newList){
+        mCuisineUploads = new ArrayList<>();
+        mCuisineUploads.addAll(newList);
+        notifyDataSetChanged();
+
+    }
+
+
 }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -14,6 +15,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -33,6 +35,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     private CheckBox cbRestaurant;
     private ProgressDialog progressDialog;
     private FirebaseAuth firebaseAuth;
+    private LinearLayout linearLayout;
 
     public final Pattern EMAIL_ADDRESS_PATTERN = Pattern.compile(
             "[a-zA-Z0-9+._%-+]{1,256}" +
@@ -47,6 +50,8 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
+
+        linearLayout = findViewById(R.id.linearLayout);
 
         firebaseAuth = FirebaseAuth.getInstance();
         //check if user is already logged in
@@ -156,7 +161,9 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                                 startActivity(new Intent(getApplicationContext(), Main.class));
                             }
                         }else{
-                            Toast.makeText(Register.this, "Registration failed. Please try again", Toast.LENGTH_SHORT).show();
+
+                            Snackbar snackbar = Snackbar.make(linearLayout, "Registration failed. Please try again", Snackbar.LENGTH_LONG);
+                            snackbar.show ();
                         }
                         progressDialog.dismiss();
 

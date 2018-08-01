@@ -4,6 +4,7 @@
     android:layout_height="fill_parent"
     android:background="@color/white"
     android:isScrollContainer="true"
+    android:id="@+id/frameLayout"
     tools:context="msc.project.foodmate.RestaurantAdd">
 
     <ScrollView
@@ -104,7 +105,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:layout_below="@+id/etIngredients"/>
+                android:layout_below="@+id/etDiet"/>
 
 
 

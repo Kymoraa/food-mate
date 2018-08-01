@@ -6,7 +6,7 @@ package msc.project.foodmate;
 
 public class PopularModel {
 
-    public String imageUri, name, price,description, ingredients;
+    public String imageUri, name, price,description, ingredients, diet;
 
     public PopularModel() {
     }
@@ -49,5 +49,13 @@ public class PopularModel {
 
     public void setIngredients(String ingredients) {
         this.ingredients = ingredients;
+    }
+
+    public String getDiet() {
+        return diet;
+    }
+
+    public void setDiet(String diet) {
+        this.diet = diet;
     }
 }

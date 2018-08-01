@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
@@ -29,17 +30,20 @@ public class RestaurantMain extends AppCompatActivity implements NavigationView.
 
     private ActionBar actionBar;
     private FirebaseAuth firebaseAuth;
+    private CoordinatorLayout coordinatorLayout;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.restaurant_main);
 
+        coordinatorLayout = findViewById(R.id.coordinator_layout);
+
         firebaseAuth = FirebaseAuth.getInstance();
-//        if(firebaseAuth.getCurrentUser()==null){
-//            //no user currently logged in
-//            finish();
-//            startActivity(new Intent(this,Login.class));
-//        }
+        if(firebaseAuth.getCurrentUser()==null){
+            //no user currently logged in
+            finish();
+            startActivity(new Intent(this,Login.class));
+        }
 
 
 
@@ -113,10 +117,13 @@ public class RestaurantMain extends AppCompatActivity implements NavigationView.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId()== R.id.menu_settings){
-            Toast.makeText(RestaurantMain.this, "Settings... coming soon", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(RestaurantMain.this, "Settings... coming soon", Toast.LENGTH_SHORT).show();
+            Snackbar snackbar = Snackbar.make(coordinatorLayout, "Settings...", Snackbar.LENGTH_LONG);
+            snackbar.show ();
         }
         if(item.getItemId()== R.id.menu_about){
-            Toast.makeText(RestaurantMain.this, "About... coming soon", Toast.LENGTH_SHORT).show();
+            Snackbar snackbar = Snackbar.make(coordinatorLayout, "About...", Snackbar.LENGTH_LONG);
+            snackbar.show ();
         }
         if(item.getItemId()== R.id.menu_sign_out){
             firebaseAuth.signOut();

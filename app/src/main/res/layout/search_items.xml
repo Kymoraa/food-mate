@@ -36,6 +36,13 @@
             android:background="@drawable/image_loading"/>
 
         <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:typeface="serif"
+            android:textSize="1sp"
+            android:textColor="@color/white"/>
+        <TextView
             android:id="@+id/tvIngredients"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,28 +56,21 @@
             android:layout_height="wrap_content"
             android:typeface="serif"
             android:text="@string/diets"
+            android:textColor="@color/green"
             android:textSize="12sp" />
-
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tvPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:typeface="serif"
-            android:text="@string/price"
-            android:textSize="12sp" />
+            <TextView
+                android:id="@+id/tvPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:typeface="serif"
+                android:text="@string/price"
+                android:textSize="12sp" />
 
-            <ImageView
-                android:id="@+id/ivDelete"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="14dp"
-                android:src="@drawable/ic_delete" />
 
         </RelativeLayout>
 
