@@ -2,16 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_save"
-        android:title="@string/save"
+        android:id="@+id/menu_add"
+        android:title="@string/add"
         app:showAsAction="always"
-        android:icon="@drawable/ic_save"/>
+        android:icon="@drawable/ic_add"/>
 
-    <item
-        android:id="@+id/menu_delete"
-        android:title="@string/do_delete"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_delete_white"
-        />
+    <!--<item-->
+        <!--android:id="@+id/menu_delete"-->
+        <!--android:title="@string/do_delete"-->
+        <!--app:showAsAction="always"-->
+        <!--android:icon="@drawable/ic_delete_white"-->
+        <!--/>-->
 
 </menu>

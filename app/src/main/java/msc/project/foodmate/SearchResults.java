@@ -3,6 +3,9 @@ package msc.project.foodmate;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +21,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,8 +43,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import msc.project.foodmate.database.DatabaseHelper;
+import msc.project.foodmate.database.model.DietDB;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 
 /**
@@ -70,9 +79,7 @@ public class SearchResults extends Fragment{
     private EditText etSearch;
     private ProgressDialog progressDialog;
 
-    SharedPreferences sharedPreferences;
-    public static final String MYPREFERENCES = "dietPreferences";
-
+    private DatabaseHelper dbHelper;
 
     private Context mContext;
 
@@ -111,9 +118,6 @@ public class SearchResults extends Fragment{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.search_results, container, false);
 
-//        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.search_results);
-
-        sharedPreferences = getActivity().getSharedPreferences(MYPREFERENCES, Context.MODE_PRIVATE);
 
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
@@ -138,6 +142,7 @@ public class SearchResults extends Fragment{
                 resultsMatch();
 
 
+
             }
 
             @Override
@@ -160,10 +165,6 @@ public class SearchResults extends Fragment{
             }
         });
 
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setCustomView(etSearch);
-
-
-
         return view;
     }
 
@@ -183,35 +184,39 @@ public class SearchResults extends Fragment{
     }
 
     //match results
-    public void resultsMatch(){
-//        String diet = "vegan";
-//        List<CuisineUploads> newList = new ArrayList<>();
-//
-//        for(CuisineUploads newCuisine : mCuisineUploads){
-//            if(newCuisine.getDiet().toLowerCase().contains(diet)){
-//                newList.add(newCuisine);
-//            }
-//
-//        }
-//
-//        searchAdapter.searchList(newList);
+    public void resultsMatch() {
+        dbHelper = new DatabaseHelper(getActivity());
 
-//        if(sharedPreferences.contains(MYPREFERENCES)){
-//            String savedItems = sharedPreferences.getString(MYPREFERENCES, "").toLowerCase();
-//            List<CuisineUploads> newList = new ArrayList<>();
-//            for(CuisineUploads newCuisine : mCuisineUploads){
-//                if(newCuisine.getDiet().toLowerCase().contains(savedItems)){
-//                    newList.add(newCuisine);
-//                }
-//
-//            }
-//            searchAdapter.searchList(newList);
-//
-//            System.out.println("Search Results: " + savedItems);
-//        }
+        String countQuery = "SELECT " + DietDB.COLUMN_DIET + " FROM " + DietDB.TABLE_NAME;
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+
+        Log.d(TAG, DatabaseUtils.dumpCursorToString(cursor));
+
+        String dietName = DatabaseUtils.dumpCursorToString(cursor);
+
+        System.out.println(dietName);
+
+        List<CuisineUploads> newList = new ArrayList<>();
+        for(CuisineUploads newCuisine : mCuisineUploads){
+
+            if(dietName.toLowerCase().contains(newCuisine.getDiet().toLowerCase())){
+                newList.add(newCuisine);
+                searchAdapter.searchList(newList);
+
+            }else if(!dietName.toLowerCase().contains(newCuisine.getDiet().toLowerCase())){
+                recyclerView.setAdapter(searchAdapter);
+            }
+
+        }
+
+
+        cursor.close();
 
 
     }
+
+
 
     //menu items - filter/search recycler view results
 
@@ -219,10 +224,6 @@ public class SearchResults extends Fragment{
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // TODO Add your menu entries here
         super.onCreateOptionsMenu(menu, inflater);
-//        inflater.inflate(R.menu.search_menu, menu);
-//
-//        MenuItem menuItem = menu.findItem(R.id.menu_search);
-//        SearchView searchView = (SearchView) menuItem.getActionView();
 
    }
 

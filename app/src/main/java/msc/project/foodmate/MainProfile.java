@@ -1,6 +1,8 @@
 package msc.project.foodmate;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,6 +16,10 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import msc.project.foodmate.database.DatabaseHelper;
+import msc.project.foodmate.database.model.DietDB;
+import msc.project.foodmate.database.model.IngredientDB;
 
 
 /**
@@ -38,10 +44,12 @@ public class MainProfile extends Fragment {
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
-    private TextView tvUser;
+    private TextView tvUser, tvDietsCount, tvIngredientsCount, tvAllergensCount;
 
     private CardView cvDiets, cvIngredients, cvAllergens;
     private ActionBar aBar;
+
+    private DatabaseHelper dbHelper;
 
 
 
@@ -82,6 +90,8 @@ public class MainProfile extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.main_profile, container, false);
 
+        aBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+
         //check the current user and set their email on the profile page
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
@@ -92,11 +102,6 @@ public class MainProfile extends Fragment {
             }
 
         //actions when the cardviews are clicked
-
-        aBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
-
-
-
         cvDiets = view.findViewById(R.id.cvDiets);
         cvDiets.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,9 +144,48 @@ public class MainProfile extends Fragment {
             }
         });
 
+        //views to set the db item counts
+        tvDietsCount = view.findViewById(R.id.tvDietsCount);
+        tvIngredientsCount = view.findViewById(R.id.tvIngredientsCount);
+        tvAllergensCount = view.findViewById(R.id.tvAllergensCount);
+
+        getDietDBCount();
+        getIngredientDBCount();
 
         return view;
 
+    }
+
+    public int getDietDBCount() {
+        String countQuery = "SELECT  * FROM " + DietDB.TABLE_NAME;
+        dbHelper = new DatabaseHelper(getActivity());
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+
+        int count = cursor.getCount();
+
+        tvDietsCount.setText(""+count);
+
+        cursor.close();
+
+        // return count
+        return count;
+    }
+
+    public int getIngredientDBCount() {
+        String countQuery = "SELECT  * FROM " + IngredientDB.TABLE_NAME;
+        dbHelper = new DatabaseHelper(getActivity());
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+
+        int count = cursor.getCount();
+
+        tvIngredientsCount.setText(""+count);
+
+        cursor.close();
+
+        // return count
+        return count;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

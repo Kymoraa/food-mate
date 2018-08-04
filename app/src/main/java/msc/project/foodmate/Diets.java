@@ -1,33 +1,35 @@
 package msc.project.foodmate;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.DialogInterface;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
-import android.util.SparseBooleanArray;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
-import static android.content.Context.MODE_PRIVATE;
+import msc.project.foodmate.database.DatabaseHelper;
+import msc.project.foodmate.database.model.DietDB;
+import msc.project.foodmate.utils.MyDividerItemDecoration;
+import msc.project.foodmate.utils.RecyclerTouchListener;
+import msc.project.foodmate.view.DietsAdapter;
 
 
 /**
@@ -40,14 +42,13 @@ public class Diets extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private ListView lvDiets;
-    private DatabaseReference databaseReference;
-    private ArrayList<String>arrayList = new ArrayList<>();
-    private ArrayAdapter<String>adapter;
+    private DietsAdapter mAdapter;
+    private List<DietDB> dietsList = new ArrayList<>();
+    private CoordinatorLayout coordinatorLayout;
+    private RecyclerView recyclerView;
+    private TextView tvNoEntries;
 
-    SharedPreferences sharedPreferences;
-    public static final String MYPREFERENCES = "dietPreferences";
-    ArrayList<String> selectedItems = new ArrayList<>();
+    private DatabaseHelper db;
 
     public Diets() {
         // Required empty public constructor
@@ -59,101 +60,209 @@ public class Diets extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.diets, container, false);
+        View view = inflater.inflate(R.layout.diet, container, false);
 
-        lvDiets = view.findViewById(R.id.lvDiets);
-        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_multiple_choice, arrayList);
-        lvDiets.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        lvDiets.setAdapter(adapter);
+        /**
+         * *********************
+         */
 
-        sharedPreferences = getActivity().getSharedPreferences(MYPREFERENCES, Context.MODE_PRIVATE);
+        coordinatorLayout = view.findViewById(R.id.coordinator_layout);
+        recyclerView = view.findViewById(R.id.recycler_view);
+        tvNoEntries = view.findViewById(R.id.tvNoEntries);
 
-//        Set<String> checkedItemsSource = sharedPreferences.getStringSet("checked_items", new HashSet<String>());
-//        SparseBooleanArray checkedItems = convertToCheckedItems(checkedItemsSource);
-//        for (int i = 0; i < checkedItems.size(); i++) {
-//            int checkedPosition = checkedItems.keyAt(i);
-//            lvDiets.setItemChecked(checkedPosition, true);
-//
-//        }
+        db = new DatabaseHelper(getActivity());
 
-        //Opening shared preference in private mode
-        //sharedPreferences = getActivity().getSharedPreferences(MYPREFERENCES,Context.MODE_PRIVATE);
-        //sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        dietsList.addAll(db.getAllDiets());
 
+        mAdapter = new DietsAdapter(getActivity(), dietsList);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.addItemDecoration(new MyDividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL, 16));
+        recyclerView.setAdapter(mAdapter);
 
-            if(sharedPreferences.contains(MYPREFERENCES)){
-                loadSelections();
+        toggleEmptyDiets();
 
-                //System.out.println("This are the shared preferences: " + MYPREFERENCES);
-
-            }
-
-        //Firebase
-        databaseReference = FirebaseDatabase.getInstance().getReference("dietsList");
-        databaseReference.addChildEventListener(new ChildEventListener() {
+        /**
+         * On long press on RecyclerView item, open alert dialog
+         * with options to choose
+         * Edit and Delete
+         * */
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(),
+                recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                String string = dataSnapshot.getValue(String.class);
-                arrayList.add(string);
-                adapter.notifyDataSetChanged();
-
+            public void onClick(View view, final int position) {
             }
 
             @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+            public void onLongClick(View view, int position) {
+                showActionsDialog(position);
             }
+        }));
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
 
         return view;
+
     }
 
-    //checked state of the list view
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//        SparseBooleanArray checkedItems = lvDiets.getCheckedItemPositions();
-//        Set<String> stringSet = convertToStringSet(checkedItems);
-//        sharedPreferences.edit()
-//                .putStringSet("checked_items", stringSet)
-//                .apply();
-//    }
+    /**
+     * Inserting new diet in db
+     * and refreshing the list
+     */
+    private void createDiet(String diet) {
+        // inserting note in db and getting
+        // newly inserted note id
+        long id = db.insertDiet(diet);
 
-//    private SparseBooleanArray convertToCheckedItems(Set<String> checkedItems) {
-//        SparseBooleanArray array = new SparseBooleanArray();
-//        for(String itemPositionStr : checkedItems) {
-//            int position = Integer.parseInt(itemPositionStr);
-//            array.put(position, true);
-//        }
-//
-//        return array;
-//    }
+        // get the newly inserted note from db
+        DietDB n = db.getDietDB(id);
 
-//    private Set<String> convertToStringSet(SparseBooleanArray checkedItems) {
-//        Set<String> result = new HashSet<>();
-//        for (int i = 0; i < checkedItems.size(); i++) {
-//            result.add(String.valueOf(checkedItems.keyAt(i)));
-//        }
-//
-//        return result;
-//    }
+        if (n != null) {
+            // adding new diet to array list at 0 position
+            dietsList.add(0, n);
+
+            // refreshing the list
+            mAdapter.notifyDataSetChanged();
+
+            toggleEmptyDiets();
+        }
+    }
+
+    /**
+     * Updating diet in db and updating
+     * item in the list by its position
+     */
+    private void updateDiet(String diet, int position) {
+        DietDB n = dietsList.get(position);
+        // updating note text
+        n.setDietDB(diet);
+
+        // updating note in db
+        db.updateDietDB(n);
+
+        // refreshing the list
+        dietsList.set(position, n);
+        mAdapter.notifyItemChanged(position);
+
+        toggleEmptyDiets();
+    }
+
+    /**
+     * Deleting note from SQLite and removing the
+     * item from the list by its position
+     */
+    private void deleteDiet(int position) {
+        // deleting the note from db
+        db.deleteDietDB(dietsList.get(position));
+
+        // removing the note from the list
+        dietsList.remove(position);
+        mAdapter.notifyItemRemoved(position);
+
+        toggleEmptyDiets();
+    }
+
+
+    /**
+     * Opens dialog with Edit - Delete options
+     * Edit - 0
+     * Delete - 0
+     */
+    private void showActionsDialog(final int position) {
+        CharSequence colors[] = new CharSequence[]{"Edit", "Delete"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Choose option");
+        builder.setItems(colors, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == 0) {
+                    showDietDialog(true, dietsList.get(position), position);
+                } else {
+                    deleteDiet(position);
+                }
+            }
+        });
+        builder.show();
+    }
+
+    /**
+     * Shows alert dialog with EditText options to enter / edit
+     * a note.
+     * when shouldUpdate=true, it automatically displays old note and changes the
+     * button text to UPDATE
+     */
+    private void showDietDialog(final boolean shouldUpdate, final DietDB diet, final int position) {
+        LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getActivity());
+        View view = layoutInflaterAndroid.inflate(R.layout.diet_dialog, null);
+
+        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(getActivity());
+        alertDialogBuilderUserInput.setView(view);
+
+        final EditText inputDiet = view.findViewById(R.id.diet);
+        inputDiet.setTypeface(Typeface.SERIF);
+        TextView dialogTitle = view.findViewById(R.id.dialog_title);
+        dialogTitle.setText(!shouldUpdate ? getString(R.string.lbl_new_note_title) : getString(R.string.lbl_edit_note_title));
+
+        if (shouldUpdate && diet != null) {
+            inputDiet.setText(diet.getDietDB());
+        }
+        alertDialogBuilderUserInput
+                .setCancelable(false)
+                .setPositiveButton(shouldUpdate ? "update" : "save", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogBox, int id) {
+
+                    }
+                })
+                .setNegativeButton("cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+                                dialogBox.cancel();
+                            }
+                        });
+
+        final AlertDialog alertDialog = alertDialogBuilderUserInput.create();
+        alertDialog.show();
+
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorAccent));
+        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorAccent));
+
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Show toast message when no text is entered
+                if (TextUtils.isEmpty(inputDiet.getText().toString())) {
+                    Toast.makeText(getActivity(), "Enter diet...", Toast.LENGTH_SHORT).show();
+                    return;
+                } else {
+                    alertDialog.dismiss();
+                }
+
+                // check if user updating note
+                if (shouldUpdate && diet != null) {
+                    // update note by it's id
+                    updateDiet(inputDiet.getText().toString(), position);
+                } else {
+                    // create new note
+                    createDiet(inputDiet.getText().toString());
+                }
+            }
+        });
+    }
+
+    /**
+     * Toggling list and empty notes view
+     */
+    private void toggleEmptyDiets() {
+        // you can check notesList.size() > 0
+
+        if (db.getDietDBCount() > 0) {
+            tvNoEntries.setVisibility(View.GONE);
+        } else {
+            tvNoEntries.setVisibility(View.VISIBLE);
+        }
+    }
 
     //Menu items
     @Override
@@ -172,92 +281,12 @@ public class Diets extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.menu_save) {
-
-            String selected = "";
-            int cntChoice = lvDiets.getCount();
-            SparseBooleanArray sparseBooleanArray = lvDiets.getCheckedItemPositions();
-
-            for (int i = 0; i < cntChoice; i++) {
-
-                if (sparseBooleanArray.get(i)) {
-                    selected += lvDiets.getItemAtPosition(i).toString() + "\n";
-                    System.out.println("Checking list while adding:" + lvDiets.getItemAtPosition(i).toString());
-
-                    Toast.makeText(getActivity(), "Selected", Toast.LENGTH_SHORT).show();
-
-                    saveSelections();
-
-                }
-
-            }
-        }else if(id == R.id.menu_delete){
-            sharedPreferences = getActivity().getSharedPreferences("MYPREFERENCE", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.clear();
-            editor.commit();
+        if (id == R.id.menu_add) {
+            showDietDialog(false, null, -1);
         }
 
         return super.onOptionsItemSelected(item);
     }
-
-        public void saveSelections() {
-
-            //save the selections in the shared preference in private mode for the user
-            SharedPreferences sharedPreferences = getActivity().getPreferences(MODE_PRIVATE);
-            SharedPreferences.Editor preferenceEditor = sharedPreferences.edit();
-            String savedItems = getSavedItems();
-            preferenceEditor.putString(MYPREFERENCES, savedItems);
-            preferenceEditor.commit();
-
-            Toast.makeText(getActivity(), "Saved", Toast.LENGTH_LONG).show();
-        }
-
-
-        public String getSavedItems(){
-            String savedItems = "";
-            int count = this.lvDiets.getAdapter().getCount();
-
-            for (int i =0; i<count; i++){
-                if(this.lvDiets.isItemChecked(i)){
-                    if(savedItems.length()>0){
-                        savedItems+="," + this.lvDiets.getItemAtPosition(i);
-                    }else{
-                        savedItems+=this.lvDiets.getItemAtPosition(i);
-                    }
-                }
-            }
-
-            System.out.println("Saved Items are: " + savedItems);
-            return savedItems;
-
-        }
-
-    public void loadSelections(){
-        //if selections were previously saved, load them
-        SharedPreferences sharedPreferences = getActivity().getPreferences(MODE_PRIVATE);
-        if(sharedPreferences.contains(MYPREFERENCES)){
-            String savedItems = sharedPreferences.getString(MYPREFERENCES, "");
-            selectedItems.addAll(Arrays.asList(savedItems.split(",")));
-
-            int count = this.lvDiets.getAdapter().getCount();
-            for (int i =0; i<count; i++){
-                String currentItem = (String) this.lvDiets.getAdapter().getItem(i);
-
-                if(selectedItems.contains(currentItem)){
-                    this.lvDiets.setItemChecked(i, true);
-
-                    Toast.makeText(getActivity(), "Current Item: " + currentItem, Toast.LENGTH_LONG).show();
-                }else{
-                    this.lvDiets.setItemChecked(i, false);
-                }
-            }
-
-        }
-
-       }
-
-
 
 
     // TODO: Rename method, update argument and hook method into UI event
