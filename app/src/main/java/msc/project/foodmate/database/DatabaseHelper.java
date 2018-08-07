@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import msc.project.foodmate.database.model.AllergenDB;
 import msc.project.foodmate.database.model.DietDB;
 import msc.project.foodmate.database.model.IngredientDB;
 
@@ -19,7 +20,7 @@ import msc.project.foodmate.database.model.IngredientDB;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Database Version
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // Database Name
     private static final String DATABASE_NAME = "food_mate";
@@ -39,6 +40,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // create ingredients table
         db.execSQL(IngredientDB.CREATE_TABLE);
+
+        // create allergens table
+        db.execSQL(AllergenDB.CREATE_TABLE);
     }
 
     // Upgrading database
@@ -47,6 +51,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + DietDB.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + IngredientDB.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + AllergenDB.TABLE_NAME);
 
         // Create tables again
         onCreate(db);
@@ -82,6 +87,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // insert row
         long id = db.insert(IngredientDB.TABLE_NAME, null, values);
+
+        // close db connection
+        db.close();
+
+        // return newly inserted row id
+        return id;
+    }
+
+    public long insertAllergen(String allergen) {
+        // get writable database as we want to write data
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        // `id` and `timestamp` will be inserted automatically.
+        // no need to add them
+        values.put(AllergenDB.COLUMN_ALLERGEN, allergen);
+
+        // insert row
+        long id = db.insert(AllergenDB.TABLE_NAME, null, values);
 
         // close db connection
         db.close();
@@ -126,7 +150,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor != null)
             cursor.moveToFirst();
 
-        // prepare diet object
+        // prepare ingredient object
         IngredientDB ingredient = new IngredientDB(
                 cursor.getInt(cursor.getColumnIndex(IngredientDB.COLUMN_ID)),
                 cursor.getString(cursor.getColumnIndex(IngredientDB.COLUMN_INGREDIENT)),
@@ -136,6 +160,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
 
         return ingredient;
+    }
+
+    public AllergenDB getAllergenDB(long id) {
+        // get readable database as we are not inserting anything
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(AllergenDB.TABLE_NAME,
+                new String[]{AllergenDB.COLUMN_ID, AllergenDB.COLUMN_ALLERGEN, AllergenDB.COLUMN_TIMESTAMP},
+                AllergenDB.COLUMN_ID + "=?",
+                new String[]{String.valueOf(id)}, null, null, null, null);
+
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        // prepare allergen object
+        AllergenDB allergen = new AllergenDB(
+                cursor.getInt(cursor.getColumnIndex(AllergenDB.COLUMN_ID)),
+                cursor.getString(cursor.getColumnIndex(AllergenDB.COLUMN_ALLERGEN)),
+                cursor.getString(cursor.getColumnIndex(AllergenDB.COLUMN_TIMESTAMP)));
+
+        // close the db connection
+        cursor.close();
+
+        return allergen;
     }
 
     public List<DietDB> getAllDiets() {
@@ -192,8 +240,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // close db connection
         db.close();
 
-        // return diets list
+        // return ingredients list
         return ingredients;
+    }
+
+    public List<AllergenDB> getAllAllergens() {
+        List<AllergenDB> allergens = new ArrayList<>();
+
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + AllergenDB.TABLE_NAME + " ORDER BY " +
+                AllergenDB.COLUMN_TIMESTAMP + " DESC";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                AllergenDB allergen = new AllergenDB();
+                allergen.setId(cursor.getInt(cursor.getColumnIndex(AllergenDB.COLUMN_ID)));
+                allergen.setAllergenDB(cursor.getString(cursor.getColumnIndex(AllergenDB.COLUMN_ALLERGEN)));
+                allergen.setTimestamp(cursor.getString(cursor.getColumnIndex(AllergenDB.COLUMN_TIMESTAMP)));
+
+                allergens.add(allergen);
+            } while (cursor.moveToNext());
+        }
+
+        // close db connection
+        db.close();
+
+        // return allergens list
+        return allergens;
     }
 
     public int getDietDBCount() {
@@ -210,6 +287,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int getIngredientDBCount() {
         String countQuery = "SELECT  * FROM " + IngredientDB.TABLE_NAME;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+
+        int count = cursor.getCount();
+        cursor.close();
+
+        // return count
+        return count;
+    }
+
+    public int getAllergenDBCount() {
+        String countQuery = "SELECT  * FROM " + AllergenDB.TABLE_NAME;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
 
@@ -242,6 +331,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 new String[]{String.valueOf(ingredient.getId())});
     }
 
+    public int updateAllergenDB(AllergenDB allergen) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(AllergenDB.COLUMN_ALLERGEN, allergen.getAllergenDB());
+
+        // updating row
+        return db.update(AllergenDB.TABLE_NAME, values, AllergenDB.COLUMN_ID + " = ?",
+                new String[]{String.valueOf(allergen.getId())});
+    }
+
     public void deleteDietDB(DietDB diet) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(DietDB.TABLE_NAME, DietDB.COLUMN_ID + " = ?",
@@ -253,6 +353,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(IngredientDB.TABLE_NAME, IngredientDB.COLUMN_ID + " = ?",
                 new String[]{String.valueOf(ingredient.getId())});
+        db.close();
+    }
+
+    public void deleteAllergenDB(AllergenDB allergen) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(AllergenDB.TABLE_NAME, AllergenDB.COLUMN_ID + " = ?",
+                new String[]{String.valueOf(allergen.getId())});
         db.close();
     }
 

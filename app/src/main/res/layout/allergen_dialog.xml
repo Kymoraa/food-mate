@@ -13,19 +13,19 @@
         android:layout_marginBottom="@dimen/dimen_10"
         android:typeface="serif"
         android:lineSpacingExtra="8sp"
-        android:text="Add New Diet"
+        android:text="Add New Allergen"
         android:textColor="@color/colorAccent"
         android:textSize="@dimen/lbl_new_note_title"
         android:textStyle="normal" />
 
     <EditText
-        android:id="@+id/diet"
+        android:id="@+id/allergen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:gravity="top"
         android:typeface="serif"
-        android:hint="Enter diet..."
+        android:hint="Enter allergen..."
         android:inputType="textCapSentences|textMultiLine"
         android:lines="4"
         android:textColorHint="@color/hint_enter_note"

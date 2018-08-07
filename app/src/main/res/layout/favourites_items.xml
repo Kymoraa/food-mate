@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="3dp"
+    app:cardElevation="3dp"
+    app:contentPadding="5dp"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/tvCuisineName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/cuisine_name"
+            android:typeface="serif"
+            android:layout_marginBottom="3dp"
+            android:textSize="15sp"
+            />
+
+
+        <ImageView
+            android:id="@+id/ivCuisine"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
+            android:background="@drawable/image_loading"/>
+
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:typeface="serif"
+            android:textSize="1sp"
+            android:textColor="@color/white"/>
+        <TextView
+            android:id="@+id/tvIngredients"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:typeface="serif"
+            android:text="@string/ingredients"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvDiets"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:typeface="serif"
+            android:text="@string/diets"
+            android:textColor="@color/green"
+            android:textSize="12sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:typeface="serif"
+                android:text="@string/price"
+                android:textSize="12sp" />
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+</android.support.v7.widget.CardView>

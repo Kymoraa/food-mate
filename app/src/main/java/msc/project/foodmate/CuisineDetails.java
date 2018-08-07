@@ -1,8 +1,11 @@
 package msc.project.foodmate;
 
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,26 +19,48 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+
 public class CuisineDetails extends AppCompatActivity {
 
     private ImageView ivCuisine, ivFavourite;
-    private TextView tvCuisineName, tvRestaurantName, tvDescription, tvPrice, tvIngredients;
+    private TextView tvCuisineName, tvRestaurantName, tvDescription, tvPrice, tvIngredients, tvDiet;
     private Button bCall, bMap;
     private LinearLayout linearLayout;
 
     private FirebaseAuth firebaseAuth;
     private Uri imageUri;
-    private StorageReference storageReference;
-    private DatabaseReference databaseReference;
+
+    StorageReference mStorageReference;
+    DatabaseReference mDatabaseReference, favReference;
+
+    String mStoragePath = "favouriteCuisines/";
+    String mDatabasePath = "favouriteCuisines";
+
+    ProgressDialog mProgressDialog;
+    private FirebaseUser firebaseUser;
 
     boolean isClicked = false;
 
@@ -48,9 +73,22 @@ public class CuisineDetails extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cuisine_details);
 
+        if (android.os.Build.VERSION.SDK_INT > 9)
+        {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+
         firebaseAuth = FirebaseAuth.getInstance();
-        storageReference = FirebaseStorage.getInstance().getReference("favouriteCuisines");
-        databaseReference = FirebaseDatabase.getInstance().getReference("favouriteCuisines");
+
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+
+        mStorageReference = FirebaseStorage.getInstance().getReference();
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference(mDatabasePath);
+        favReference = FirebaseDatabase.getInstance().getReference(mDatabasePath);
+
+        mProgressDialog = new ProgressDialog(this);
 
         linearLayout = findViewById(R.id.linearLayout);
 
@@ -61,6 +99,8 @@ public class CuisineDetails extends AppCompatActivity {
         tvDescription = findViewById(R.id.tvDescription);
         tvPrice = findViewById(R.id.tvPrice);
         tvIngredients = findViewById(R.id.tvIngredients);
+        tvDiet = findViewById(R.id.tvDiet);
+
 
         bCall = findViewById(R.id.bCall);
         bCall.setOnClickListener(new View.OnClickListener() {
@@ -87,14 +127,14 @@ public class CuisineDetails extends AppCompatActivity {
             public void onClick(View view) {
 
                 if(isClicked){
+                    removeFavourite();
                     view.setBackgroundResource(R.drawable.ic_fav_outline);
-                    Snackbar snackbar = Snackbar.make(linearLayout, "Removed from favourites", Snackbar.LENGTH_LONG);
-                    snackbar.show ();
+
                 }else{
+
                     addFavourite();
                     view.setBackgroundResource(R.drawable.ic_fav_solid);
-                    Snackbar snackbar = Snackbar.make(linearLayout, "Added to favourites", Snackbar.LENGTH_LONG);
-                    snackbar.show ();
+
                 }
 
                 isClicked =!isClicked;
@@ -133,27 +173,143 @@ public class CuisineDetails extends AppCompatActivity {
             String price  = getIntent().getStringExtra("price");
             String description  = getIntent().getStringExtra("description");
             String ingredients  = getIntent().getStringExtra("ingredients");
+            String diet = getIntent().getStringExtra("diet");
 
-            setIntentExtras(imageUrl, name, price, description, ingredients);
+            setIntentExtras(imageUrl, name, price, description, ingredients, diet);
 
         }
 
     }
 
-    private void setIntentExtras( String imageUrl, String name, String price, String description, String ingredients){
+    private void setIntentExtras( String imageUrl, String name, String price, String description, String ingredients,
+                                  String diet){
 
         Picasso.get().load(imageUrl).into(ivCuisine);
         tvCuisineName.setText(name);
         tvDescription.setText(description);
         tvPrice.setText(price);
         tvIngredients.setText(ingredients);
+        tvDiet.setText(diet);
+
+    }
+
+    private void isFavourite() {
+        favReference = mDatabaseReference.child("name");
+        final String name  = getIntent().getStringExtra("name");
+        favReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot data: dataSnapshot.getChildren()){
+                    if (data.child(name).exists()) {
+                        Snackbar snackbar = Snackbar.make(linearLayout, "Favourite already exists", Snackbar.LENGTH_LONG);
+                        snackbar.show();
+                    } else {
+                        addFavourite();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
     private void addFavourite(){
-        //method to add ite to favourites
+        //method to add item to favourites
+
+        mProgressDialog.setTitle("Adding to favourites...");
+        mProgressDialog.show();
+
+        if(getIntent().hasExtra("imageUrl")&& getIntent().hasExtra("name")&& getIntent().hasExtra("price")
+                && getIntent().hasExtra("description") && getIntent().hasExtra("ingredients")){
+
+            String imageUrl  = getIntent().getStringExtra("imageUrl");
+            final String name  = getIntent().getStringExtra("name");
+            final String price  = getIntent().getStringExtra("price");
+            final String description  = getIntent().getStringExtra("description");
+            final String ingredients  = getIntent().getStringExtra("ingredients");
+            final String diet = getIntent().getStringExtra("diet");
+
+            InputStream is = getConnection(imageUrl);
+
+            if (is != null ) {
+                StorageReference sref = mStorageReference.child(mStoragePath + System.currentTimeMillis());
+                //    + "." + getFileExtension(mFilePathUri));
+
+                sref.putStream(is)
+
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                CuisineUploads cuisineUploads = new CuisineUploads(name, price, description, ingredients,
+                                        taskSnapshot.getStorage().getDownloadUrl().toString(), diet);
+
+
+                                //hide progress dialog
+                                mProgressDialog.dismiss();
+
+                                Snackbar snackbar = Snackbar.make(linearLayout, "Successfully added to favourites", Snackbar.LENGTH_LONG);
+                                snackbar.show();
+
+                                //getting image ID
+                                String imageUploadID = mDatabaseReference.push().getKey();
+                                //uploading it into database reference
+                                mDatabaseReference.child(imageUploadID).setValue(cuisineUploads);
+                            }
+                        })
+                        //if something goes wrong
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                mProgressDialog.dismiss();
+
+                                //show error toast
+                                Snackbar snackbar = Snackbar.make(linearLayout, "Unable to add to favourites", Snackbar.LENGTH_LONG);
+                                snackbar.show();
+
+                            }
+                        })
+                        .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+
+
+                            }
+                        });
+            }else{
+                Snackbar snackbar = Snackbar.make(linearLayout, "No selection made", Snackbar.LENGTH_LONG);
+                snackbar.show();
+            }
+
+
+        }
 
     }
+
+
+    private void removeFavourite(){
+        Snackbar snackbar = Snackbar.make(linearLayout, "Removed from favourites", Snackbar.LENGTH_LONG);
+        snackbar.show ();
+
+    }
+
+    private InputStream getConnection(String imageUrl) {
+        InputStream is = null;
+        try {
+            URLConnection conn = new URL(imageUrl).openConnection();
+            is = conn.getInputStream();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return is;
+    }
+
 
 
     @Override

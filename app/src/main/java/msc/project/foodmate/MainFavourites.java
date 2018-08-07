@@ -1,23 +1,57 @@
 package msc.project.foodmate;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import msc.project.foodmate.database.DatabaseHelper;
+import msc.project.foodmate.database.model.DietDB;
+import msc.project.foodmate.database.model.IngredientDB;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.regex.Pattern;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link MainFavourites.OnFragmentInteractionListener} interface
+ * {@link SearchResults.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link MainFavourites#newInstance} factory method to
+ * Use the {@link SearchResults#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MainFavourites extends Fragment {
+public class MainFavourites extends Fragment{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -29,6 +63,13 @@ public class MainFavourites extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    private RecyclerView recyclerView;
+    private FavouritesAdapter favouritesAdapter;
+    private DatabaseReference databaseReference;
+    private List<CuisineUploads> mCuisineUploads;
+
+    private Context mContext;
+
     public MainFavourites() {
         // Required empty public constructor
     }
@@ -39,11 +80,11 @@ public class MainFavourites extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment MainFavourites.
+     * @return A new instance of fragment SearchResults.
      */
     // TODO: Rename and change types and number of parameters
-    public static MainFavourites newInstance(String param1, String param2) {
-        MainFavourites fragment = new MainFavourites();
+    public static SearchResults newInstance(String param1, String param2) {
+        SearchResults fragment = new SearchResults();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -54,18 +95,64 @@ public class MainFavourites extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        mContext = getActivity();
+        setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.main_favourites, container, false);
+        View view = inflater.inflate(R.layout.main_favourites, container, false);
+
+
+        recyclerView = view.findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        mCuisineUploads= new ArrayList<>();
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("favouriteCuisines");
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
+                    CuisineUploads cuisineUploads = postSnapshot.getValue(CuisineUploads.class);
+                    mCuisineUploads.add(cuisineUploads);
+                }
+
+
+                favouritesAdapter = new FavouritesAdapter(getActivity(), mCuisineUploads);
+                recyclerView.setAdapter(favouritesAdapter);
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        return view;
     }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // TODO Add your menu entries here
+        super.onCreateOptionsMenu(menu, inflater);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -90,6 +177,8 @@ public class MainFavourites extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
+
 
     /**
      * This interface must be implemented by activities that contain this

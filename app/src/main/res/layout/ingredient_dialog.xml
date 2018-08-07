@@ -25,7 +25,7 @@
         android:background="@android:color/transparent"
         android:gravity="top"
         android:typeface="serif"
-        android:hint="Enter your ingredient"
+        android:hint="Enter ingredient..."
         android:inputType="textCapSentences|textMultiLine"
         android:lines="4"
         android:textColorHint="@color/hint_enter_note"

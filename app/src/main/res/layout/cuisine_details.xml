@@ -95,6 +95,16 @@
                     android:text="@string/ingredients"
                     android:textSize="1sp" />
 
+                <TextView
+                    android:id="@+id/tvDiet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/tvIngredients"
+                    android:textColor="@color/white"
+                    android:text="@string/ingredients"
+                    android:textSize="1sp" />
+
 
                 <Button
                     android:id="@+id/bCall"

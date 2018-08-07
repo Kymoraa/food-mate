@@ -19,20 +19,20 @@ import java.util.List;
  * Created by Jackie Moraa on 7/12/2018.
  */
 
-public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ImageViewHolder> {
+public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.ImageViewHolder> {
 
     private Context mContext;
     private List<CuisineUploads> mCuisineUploads;
 
 
-    public SearchAdapter(Context context, List<CuisineUploads> cuisineUploads){
+    public FavouritesAdapter(Context context, List<CuisineUploads> cuisineUploads){
         mContext = context;
         mCuisineUploads = cuisineUploads;
     }
 
     @Override
     public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_items, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.favourites_items, parent, false);
 
 
         return  new ImageViewHolder(v);
@@ -94,13 +94,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ImageViewH
             linearLayout = itemView.findViewById(R.id.linearLayout);
 
         }
-    }
-
-    public void searchList(List<CuisineUploads> newList){
-        mCuisineUploads = new ArrayList<>();
-        mCuisineUploads.addAll(newList);
-        notifyDataSetChanged();
-
     }
 
 

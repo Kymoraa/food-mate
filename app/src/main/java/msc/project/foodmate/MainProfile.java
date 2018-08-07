@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import msc.project.foodmate.database.DatabaseHelper;
+import msc.project.foodmate.database.model.AllergenDB;
 import msc.project.foodmate.database.model.DietDB;
 import msc.project.foodmate.database.model.IngredientDB;
 
@@ -151,6 +152,7 @@ public class MainProfile extends Fragment {
 
         getDietDBCount();
         getIngredientDBCount();
+        getAllergenDBCount();
 
         return view;
 
@@ -181,6 +183,22 @@ public class MainProfile extends Fragment {
         int count = cursor.getCount();
 
         tvIngredientsCount.setText(""+count);
+
+        cursor.close();
+
+        // return count
+        return count;
+    }
+
+    public int getAllergenDBCount() {
+        String countQuery = "SELECT  * FROM " + AllergenDB.TABLE_NAME;
+        dbHelper = new DatabaseHelper(getActivity());
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+
+        int count = cursor.getCount();
+
+        tvAllergensCount.setText(""+count);
 
         cursor.close();
 
