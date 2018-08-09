@@ -26,6 +26,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -67,6 +68,7 @@ public class MainFavourites extends Fragment{
     private FavouritesAdapter favouritesAdapter;
     private DatabaseReference databaseReference;
     private List<CuisineUploads> mCuisineUploads;
+    private TextView tvNoEntries;
 
     private Context mContext;
 
@@ -111,6 +113,9 @@ public class MainFavourites extends Fragment{
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mCuisineUploads= new ArrayList<>();
+        tvNoEntries = view.findViewById(R.id.tvNoEntries);
+
+        String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         databaseReference = FirebaseDatabase.getInstance().getReference("favouriteCuisines");
 
@@ -119,12 +124,20 @@ public class MainFavourites extends Fragment{
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
                     CuisineUploads cuisineUploads = postSnapshot.getValue(CuisineUploads.class);
-                    mCuisineUploads.add(cuisineUploads);
+
+                   String name = postSnapshot.child("name").getValue(String.class);
+
+                   if(name.contains("Corn")) {
+
+                       mCuisineUploads.add(cuisineUploads);
+                   }
                 }
 
 
                 favouritesAdapter = new FavouritesAdapter(getActivity(), mCuisineUploads);
                 recyclerView.setAdapter(favouritesAdapter);
+
+                toggleEmptyList();
 
 
             }
@@ -137,6 +150,19 @@ public class MainFavourites extends Fragment{
         });
 
         return view;
+    }
+
+    /**
+     * Toggling list and empty favourites view
+     */
+    private void toggleEmptyList() {
+        // you can check favouritesList.size() > 0
+
+        if (mCuisineUploads.size() > 0) {
+            tvNoEntries.setVisibility(View.GONE);
+        } else {
+            tvNoEntries.setVisibility(View.VISIBLE);
+        }
     }
 
 

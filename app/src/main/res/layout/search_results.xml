@@ -22,7 +22,7 @@
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:textColor="@color/grey3"
-            android:typeface="serif"
+            android:fontFamily="sans-serif-light"
             android:cursorVisible="true"
             android:drawableLeft="@android:drawable/ic_menu_search"/>
 
@@ -32,6 +32,19 @@
         android:layout_width="match_parent"
         android:layout_below="@id/etSearch"
         android:layout_height="match_parent"/>
+
+
+        <TextView
+            android:id="@+id/tvNoEntries"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/margin_top_no_notes"
+            android:fontFamily="sans-serif-light"
+            android:text="@string/msg_no_notes"
+            android:textColor="@color/msg_no_notes"
+            android:textSize="@dimen/msg_no_notes" />
+
 
     </RelativeLayout>
 

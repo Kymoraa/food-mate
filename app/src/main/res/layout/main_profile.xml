@@ -24,8 +24,8 @@
                 android:text="User Name"
                 android:textColor="@color/white"
                 android:layout_marginTop="100dp"
-                android:textSize="17sp"
-                android:typeface="serif" />
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-light"/>
         </LinearLayout>
 
         <android.support.v7.widget.CardView
@@ -56,6 +56,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/diets"
+                        android:fontFamily="sans-serif-light"
                         android:textSize="15sp" />
 
                     <TextView
@@ -63,7 +64,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingTop="10dp"
-
+                        android:fontFamily="sans-serif-light"
+                        android:textColor="@color/orange700"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -80,6 +82,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/ingredients"
+                        android:fontFamily="sans-serif-light"
                         android:textSize="15sp" />
 
                     <TextView
@@ -87,6 +90,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingTop="10dp"
+                        android:fontFamily="sans-serif-light"
+                        android:textColor="@color/orange700"
                         android:text="7"
                         android:textSize="15sp"
                         android:textStyle="bold" />
@@ -104,6 +109,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/allergens"
+                        android:fontFamily="sans-serif-light"
                         android:textSize="15sp" />
 
                     <TextView
@@ -111,6 +117,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingTop="10dp"
+                        android:fontFamily="sans-serif-light"
+                        android:textColor="@color/orange700"
                         android:text="3"
                         android:textSize="15sp"
                         android:textStyle="bold" />
@@ -161,6 +169,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/diets"
+                        android:fontFamily="sans-serif-light"
                         android:textSize="13sp"
                         android:paddingTop="10dp" />
 
@@ -194,6 +203,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/ingredients"
+                        android:fontFamily="sans-serif-light"
                         android:textSize="13sp"
                         android:paddingTop="10dp" />
 
@@ -225,6 +235,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/allergens"
+                        android:fontFamily="sans-serif-light"
                         android:textSize="13sp"
                         android:paddingTop="10dp" />
 

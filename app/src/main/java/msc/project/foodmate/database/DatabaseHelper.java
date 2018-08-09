@@ -11,6 +11,7 @@ import java.util.List;
 
 import msc.project.foodmate.database.model.AllergenDB;
 import msc.project.foodmate.database.model.DietDB;
+import msc.project.foodmate.database.model.FavouritesDB;
 import msc.project.foodmate.database.model.IngredientDB;
 
 /**
@@ -20,7 +21,7 @@ import msc.project.foodmate.database.model.IngredientDB;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Database Version
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     // Database Name
     private static final String DATABASE_NAME = "food_mate";
@@ -43,6 +44,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // create allergens table
         db.execSQL(AllergenDB.CREATE_TABLE);
+
+        // create favourites table
+        db.execSQL(FavouritesDB.CREATE_TABLE);
     }
 
     // Upgrading database
@@ -52,6 +56,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + DietDB.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + IngredientDB.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + AllergenDB.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + FavouritesDB.TABLE_NAME);
 
         // Create tables again
         onCreate(db);
@@ -95,6 +100,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
+
     public long insertAllergen(String allergen) {
         // get writable database as we want to write data
         SQLiteDatabase db = this.getWritableDatabase();
@@ -106,6 +112,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // insert row
         long id = db.insert(AllergenDB.TABLE_NAME, null, values);
+
+        // close db connection
+        db.close();
+
+        // return newly inserted row id
+        return id;
+    }
+
+    //Add to favs
+    public long insertFavourite(String imageUri, String name, String price, String description, String ingredients, String diet) {
+        // get writable database as we want to write data
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        // `id` and `timestamp` will be inserted automatically.
+        // no need to add them
+        values.put(FavouritesDB.COLUMN_IMAGE, imageUri);
+        values.put(FavouritesDB.COLUMN_NAME, name);
+        values.put(FavouritesDB.COLUMN_PRICE, price);
+        values.put(FavouritesDB.COLUMN_DESCRIPTION, description);
+        values.put(FavouritesDB.COLUMN_INGREDIENTS, ingredients);
+        values.put(FavouritesDB.COLUMN_DIET, diet);
+
+
+        // insert row
+        long id = db.insert(FavouritesDB.TABLE_NAME, null, values);
 
         // close db connection
         db.close();
@@ -184,6 +216,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
 
         return allergen;
+    }
+
+    public FavouritesDB getFavouritesDB(long id) {
+        // get readable database as we are not inserting anything
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(FavouritesDB.TABLE_NAME,
+                new String[]{FavouritesDB.COLUMN_ID, FavouritesDB.COLUMN_IMAGE, FavouritesDB.COLUMN_NAME,
+                        FavouritesDB.COLUMN_PRICE, FavouritesDB.COLUMN_DESCRIPTION, FavouritesDB.COLUMN_INGREDIENTS,
+                FavouritesDB.COLUMN_DIET},
+                FavouritesDB.COLUMN_ID + "=?",
+                new String[]{String.valueOf(id)}, null, null, null, null);
+
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        // prepare favourites object
+        FavouritesDB favourites = new FavouritesDB(
+                cursor.getInt(cursor.getColumnIndex(FavouritesDB.COLUMN_ID)),
+                cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_IMAGE)),
+                cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_NAME)),
+                cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_PRICE)),
+                cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_DESCRIPTION)),
+                cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_INGREDIENTS)),
+                cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_DIET)));
+
+        // close the db connection
+        cursor.close();
+
+        return favourites;
     }
 
     public List<DietDB> getAllDiets() {
@@ -273,6 +335,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return allergens;
     }
 
+    public List<FavouritesDB> getAllFavourites() {
+        List<FavouritesDB> favourites = new ArrayList<>();
+
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + FavouritesDB.TABLE_NAME + " ORDER BY " +
+                FavouritesDB.COLUMN_NAME + " DESC";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                FavouritesDB favourite = new FavouritesDB();
+                favourite.setId(cursor.getInt(cursor.getColumnIndex(FavouritesDB.COLUMN_ID)));
+                favourite.setImageUrl(cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_IMAGE)));
+                favourite.setName(cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_NAME)));
+                favourite.setPrice(cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_PRICE)));
+                favourite.setDescription(cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_DESCRIPTION)));
+                favourite.setIngredients(cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_INGREDIENTS)));
+                favourite.setDiet(cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_DIET)));
+
+                favourites.add(favourite);
+            } while (cursor.moveToNext());
+        }
+
+        // close db connection
+        db.close();
+
+        // return favourites list
+        return favourites;
+    }
+
     public int getDietDBCount() {
         String countQuery = "SELECT  * FROM " + DietDB.TABLE_NAME;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -299,6 +394,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int getAllergenDBCount() {
         String countQuery = "SELECT  * FROM " + AllergenDB.TABLE_NAME;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+
+        int count = cursor.getCount();
+        cursor.close();
+
+        // return count
+        return count;
+    }
+
+    public int getFavouritesDBCount() {
+        String countQuery = "SELECT  * FROM " + FavouritesDB.TABLE_NAME;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
 
@@ -360,6 +467,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(AllergenDB.TABLE_NAME, AllergenDB.COLUMN_ID + " = ?",
                 new String[]{String.valueOf(allergen.getId())});
+        db.close();
+    }
+
+    public void deleteFavouriteDB(FavouritesDB favourite) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(FavouritesDB.TABLE_NAME, FavouritesDB.COLUMN_NAME + " = ?",
+                new String[]{String.valueOf(favourite.getName())});
         db.close();
     }
 

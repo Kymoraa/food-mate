@@ -33,6 +33,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import msc.project.foodmate.database.DatabaseHelper;
+import msc.project.foodmate.database.model.AllergenDB;
 import msc.project.foodmate.database.model.DietDB;
 import msc.project.foodmate.database.model.IngredientDB;
 
@@ -71,6 +72,7 @@ public class SearchResults extends Fragment{
     private ProgressDialog progressDialog;
 
     private DatabaseHelper dbHelper;
+    private TextView tvNoEntries;
 
     private Context mContext;
 
@@ -115,6 +117,8 @@ public class SearchResults extends Fragment{
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mCuisineUploads= new ArrayList<>();
+        tvNoEntries = view.findViewById(R.id.tvNoEntries);
+        tvNoEntries.setVisibility(View.GONE);
 
         databaseReference = FirebaseDatabase.getInstance().getReference("cuisineUploads");
 
@@ -131,8 +135,7 @@ public class SearchResults extends Fragment{
                 recyclerView.setAdapter(searchAdapter);
 
                 resultsMatch();
-
-
+                toggleEmptyResults();
 
             }
 
@@ -167,6 +170,8 @@ public class SearchResults extends Fragment{
                 for(CuisineUploads newCuisine : mCuisineUploads){
                     if(newCuisine.getName().toLowerCase().contains(userInput)){
                         newList.add(newCuisine);
+                    }else{
+                        tvNoEntries.setVisibility(View.VISIBLE);
                     }
 
                 }
@@ -181,12 +186,19 @@ public class SearchResults extends Fragment{
 
         String dietQuery = "SELECT " + DietDB.COLUMN_DIET + " FROM " + DietDB.TABLE_NAME;
         Cursor dietCursor = db.rawQuery(dietQuery, null);
+        ArrayList<String> dietsEntered =new ArrayList<String>() ;
 
-
+        dietCursor.moveToFirst();
+        if(dietCursor.getCount()>0){
+            do{
+                dietsEntered.add(dietCursor.getString(0));
+            }while(dietCursor.moveToNext());
+        }
 
         String ingredientQuery = "SELECT " + IngredientDB.COLUMN_INGREDIENT + " FROM " + IngredientDB.TABLE_NAME;
-        ArrayList<String> ingredientsEntered=new ArrayList<String>() ;
         Cursor ingredientCursor = db.rawQuery(ingredientQuery,null);
+        ArrayList<String> ingredientsEntered=new ArrayList<String>() ;
+
 
         ingredientCursor.moveToFirst();
         if(ingredientCursor.getCount()>0){
@@ -195,141 +207,138 @@ public class SearchResults extends Fragment{
             }while(ingredientCursor.moveToNext());
         }
 
-        System.out.println(ingredientsEntered);
+        String allergenQuery = "SELECT " + AllergenDB.COLUMN_ALLERGEN + " FROM " + AllergenDB.TABLE_NAME;
+        Cursor allergenCursor = db.rawQuery(allergenQuery,null);
+        ArrayList<String> allergensEntered=new ArrayList<String>() ;
 
-        if(ingredientsEntered.contains("Cheese, Mushrooms")){
-            System.out.println("It contains CHEESE and Mushrooms");
+
+        allergenCursor.moveToFirst();
+        if(allergenCursor.getCount()>0){
+            do{
+                allergensEntered.add(allergenCursor.getString(0));
+            }while(allergenCursor.moveToNext());
         }
-
 
 
         dietCursor.close();
         ingredientCursor.close();
+        allergenCursor.close();
 
 
         //Check for matches
         List<CuisineUploads> newList = new ArrayList<>();
         for(CuisineUploads newCuisine : mCuisineUploads){
 
+            String diets = newCuisine.getDiet().toLowerCase();
+            ArrayList<String> cuisineDiet = new ArrayList<String>(Arrays.asList(diets.split(",")));
+
             String ingredients = newCuisine.getIngredients().toLowerCase();
             ArrayList<String> cuisineIngredients = new ArrayList<String>(Arrays.asList(ingredients.split(",")));
 
-            System.out.println(cuisineIngredients);
-
-//            for (int i = 0; i < cuisineIngredients.size(); i++) {
-//
-//                for (int k = 0; k < ingredientsEntered.size(); k++) {
-//
-//                    if (!cuisineIngredients.get(i).toLowerCase().contains(ingredientsEntered.get(k).toLowerCase())){
-//
-//                        newList.add(newCuisine);
-//                    }
-//
-//                }
-//            }
-//
-//            searchAdapter.searchList(newList);
+            String allergens = newCuisine.getIngredients().toLowerCase();
+            ArrayList<String> cuisineAllergens = new ArrayList<String>(Arrays.asList(allergens.split(",")));
 
 
-
-//            HashSet<String> wordSet = new HashSet();
-//            for (String word : ingredientsEntered) {
-//                wordSet.add(word);
-//            }
-//
-//            for (String sentence : cuisineIngredients) {
-//                String[] sentenceWords = sentence.split(", "); // You probably want to use a regex here instead of just splitting on a " ", but this is just an example.
-//                for (String word : sentenceWords) {
-//                    if (wordSet.contains(word)) {
-//                        // The sentence contains one of the special words.
-//                        // DO SOMETHING
-//
-//                        newList.add(newCuisine);
-//                        break;
-//                    }
-//                }
-//            }
-//
-//            searchAdapter.searchList(newList);
-
-
-
-
-            StringBuilder regex = new StringBuilder();
+            StringBuilder i_regex = new StringBuilder();
             boolean first = true;
-// Let's say ingredientsEntered ={"quick", "brown", "fox"}
-            regex.append("\\b^((?!");
+            i_regex.append("^ *(");
             for (String w : ingredientsEntered) {
                 if (!first) {
-                    regex.append('|');
+                    i_regex.append('|');
                 } else {
                     first = false;
                 }
-                regex.append(w);
+                i_regex.append(w);
             }
-            regex.append(").)*$\\b" );
+            i_regex.append(") *$" );
 
-            System.out.println(regex);
-// Now regex is "\b(?:quick|brown|fox)\b", i.e. your list of words
-// separated by OR signs, enclosed in non-capturing groups
-// anchored to word boundaries by '\b's on both sides.
-            Pattern p = Pattern.compile(regex.toString().toLowerCase());
+            Pattern i_pattern = Pattern.compile(i_regex.toString().toLowerCase());
+            boolean ingredientsMatch =false;
             for (int i = 0; i < cuisineIngredients.size(); i++) {
-                if (p.matcher(cuisineIngredients.get(i)).find()) {
+
+                if (i_pattern.matcher(cuisineIngredients.get(i)).find()) {
                     // Do something
-                    newList.add(newCuisine);
+                    ingredientsMatch = true;
+                    break;
                 }
-            }searchAdapter.searchList(newList);
+            }
+
+            StringBuilder d_regex = new StringBuilder();
+            boolean first1 = true;
+            d_regex.append("^ *(");
+            for (String w : dietsEntered) {
+                if (!first1) {
+                    d_regex.append('|');
+                } else {
+                    first1 = false;
+                }
+                d_regex.append(w);
+            }
+            d_regex.append(") *$" );
+
+            Pattern d_pattern = Pattern.compile(d_regex.toString().toLowerCase());
+            boolean dietsMatch =false;
+            for (int i = 0; i < cuisineDiet.size(); i++) {
+
+                if (d_pattern.matcher(cuisineDiet.get(i)).find() || dietsEntered.isEmpty()) {
+                    // Do something
+                    dietsMatch = true;
+                    break;
+                }
+            }
+
+            StringBuilder a_regex = new StringBuilder();
+            boolean first2 = true;
+            a_regex.append("^ *(");
+            for (String w : allergensEntered) {
+                if (!first2) {
+                    a_regex.append('|');
+                } else {
+                    first2 = false;
+                }
+                a_regex.append(w);
+            }
+            a_regex.append(") *$" );
+
+            Pattern a_pattern = Pattern.compile(a_regex.toString().toLowerCase());
+            boolean allergensMatch =false;
+            for (int i = 0; i < cuisineAllergens.size(); i++) {
+
+                if (a_pattern.matcher(cuisineAllergens.get(i)).find()) {
+                    // Do something
+                    allergensMatch = true;
+                    break;
+                }
+            }
+
+            //if ingredients and allergens are not present and the diet is a match - show the cuisine
+            if(((!ingredientsMatch) || ingredientsEntered.isEmpty())&& (dietsMatch) &&((!allergensMatch)
+                    || allergensEntered.isEmpty())){
+                newList.add(newCuisine);
+            }
 
 
-//^((?!hede).)*$  ^((?!badword).)*$
+            searchAdapter.searchList(newList);
 
-
-//dietName.toLowerCase().contains(newCuisine.getDiet().toLowerCase())&&
-
-//
-//            if(!ingredientName.toLowerCase().contains(newIngredients.toLowerCase()))  {
-//                newList.add(newCuisine);
-//
-//            }searchAdapter.searchList(newList);
-
-//            }else if(!dietName.toLowerCase().contains(newCuisine.getDiet().toLowerCase())){
-//                recyclerView.setAdapter(searchAdapter);
-//            }
+            if(newList.size()>0){
+                tvNoEntries.setVisibility(View.GONE);
+            }else{
+                tvNoEntries.setVisibility(View.VISIBLE);
+            }
 
         }
 
-
-
-
     }
 
-    public int getDietDBCount() {
-        dbHelper = new DatabaseHelper(getActivity());
-        String countQuery = "SELECT  * FROM " + DietDB.TABLE_NAME;
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery(countQuery, null);
-
-        int count = cursor.getCount();
-        cursor.close();
-
-        // return count
-        return count;
+    private void toggleEmptyResults() {
+//        // you can check List.size() > 0
+//
+//        if (mCuisineUploads.size() > 0) {
+//            tvNoEntries.setVisibility(View.GONE);
+//        } else {
+//            tvNoEntries.setVisibility(View.VISIBLE);
+//        }
     }
-
-    public int getIngredientDBCount() {
-        dbHelper = new DatabaseHelper(getActivity());
-        String countQuery = "SELECT  * FROM " + IngredientDB.TABLE_NAME;
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery(countQuery, null);
-
-        int count = cursor.getCount();
-        cursor.close();
-
-        // return count
-        return count;
-    }
-
 
 
     //menu items - filter/search recycler view results
@@ -352,22 +361,23 @@ public class SearchResults extends Fragment{
     public class SearchTextWatcher implements TextWatcher {
         public SearchTextWatcher(EditText e) {
             etSearch = e;
-            etSearch.setTypeface(Typeface.SERIF);
+            etSearch.setTypeface(Typeface.SANS_SERIF);
+
         }
 
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            etSearch.setTypeface(Typeface.SERIF);
+            etSearch.setTypeface(Typeface.SANS_SERIF);
         }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            etSearch.setTypeface(Typeface.SERIF);
+            etSearch.setTypeface(Typeface.SANS_SERIF);
         }
 
         public void afterTextChanged(Editable s) {
             if(s.length() == 0){
-                etSearch.setTypeface(Typeface.SERIF);
+                etSearch.setTypeface(Typeface.SANS_SERIF);
             } else {
-                etSearch.setTypeface(Typeface.SERIF);
+                etSearch.setTypeface(Typeface.SANS_SERIF);
             }
 
         }

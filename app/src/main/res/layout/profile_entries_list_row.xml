@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/dot"
         android:text="Created: "
-        android:typeface="serif"
+        android:fontFamily="sans-serif-light"
         android:textColor="@color/timestamp"
         android:textSize="13sp" />
 
@@ -35,7 +35,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/created"
-        android:typeface="serif"
+        android:fontFamily="sans-serif-light"
         android:textColor="@color/timestamp"
         android:textSize="13sp" />
 
@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/timestamp"
         android:layout_toRightOf="@id/dot"
-        android:typeface="serif"
+        android:fontFamily="sans-serif-light"
         android:textSize="17sp" />
 
 </RelativeLayout>

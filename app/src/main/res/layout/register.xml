@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
             android:ems="10"
+            android:fontFamily="sans-serif-light"
             android:layout_below="@+id/ivLogo"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="40dp"
@@ -44,6 +45,7 @@
             android:inputType="textPassword"
             android:ems="10"
             android:hint="@string/password_hint"
+            android:fontFamily="sans-serif-light"
             android:layout_below="@+id/etEmail"
             android:layout_alignLeft="@+id/etEmail"
             android:layout_alignStart="@+id/etEmail"
@@ -59,6 +61,7 @@
             android:inputType="textPassword"
             android:ems="10"
             android:hint="@string/confirm_password"
+            android:fontFamily="sans-serif-light"
             android:layout_below="@+id/etPassword"
             android:layout_alignLeft="@+id/etEmail"
             android:layout_alignStart="@+id/etEmail"
@@ -75,7 +78,7 @@
             android:text="@string/check_restaurant"
             android:buttonTint="@color/white"
             android:textColor="@color/white"
-            android:typeface="serif"
+            android:fontFamily="sans-serif-light"
             android:layout_marginBottom="20dp"
             android:layout_centerHorizontal="true"/>
 
@@ -89,6 +92,7 @@
             android:layout_centerHorizontal="true"
             android:elevation="3dp"
             android:textAllCaps="true"
+            android:fontFamily="sans-serif-light"
             android:textSize="15sp"
             android:layout_below="@+id/cbRestaurant"
            />

@@ -33,6 +33,7 @@
         android:layout_marginTop="40dp"
         android:layout_marginBottom="20dp"
         android:hint="@string/email_hint"
+        android:fontFamily="sans-serif-light"
         android:textColor="@color/white"
         android:textColorHint="@color/white"
         android:backgroundTint="@color/orange700" />
@@ -43,6 +44,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="@string/password_hint"
+        android:fontFamily="sans-serif-light"
         android:inputType="textPassword"
         android:layout_below="@+id/etEmail"
         android:layout_alignLeft="@+id/etEmail"
@@ -62,6 +64,7 @@
         android:layout_marginTop="29dp"
         android:background="@color/orange700"
         android:text="@string/sign_in"
+        android:fontFamily="sans-serif-light"
         android:textAllCaps="true"
         android:textColor="@color/white"
         android:textSize="15sp" />
@@ -75,6 +78,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:textColor="@color/white"
+        android:fontFamily="sans-serif-light"
         android:linksClickable="true"
         android:clickable="true" />
 
@@ -83,6 +87,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/guest"
+        android:fontFamily="sans-serif-light"
         android:layout_below="@+id/tvRegister"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="45dp"

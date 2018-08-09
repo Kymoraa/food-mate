@@ -36,6 +36,7 @@
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
                 android:paddingTop="5dp"
+                android:fontFamily="sans-serif-light"
                 android:textSize="13sp" />
 
             <TextView
@@ -47,6 +48,7 @@
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
                 android:paddingTop="5dp"
+                android:fontFamily="sans-serif-light"
                 android:textSize="12sp" />
 
 

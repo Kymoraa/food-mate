@@ -2,7 +2,11 @@ package msc.project.foodmate;
 
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
@@ -10,12 +14,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +40,11 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import msc.project.foodmate.database.DatabaseHelper;
+import msc.project.foodmate.database.model.DietDB;
+import msc.project.foodmate.database.model.FavouritesDB;
+
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -43,13 +54,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+
 public class CuisineDetails extends AppCompatActivity {
 
     private ImageView ivCuisine, ivFavourite;
     private TextView tvCuisineName, tvRestaurantName, tvDescription, tvPrice, tvIngredients, tvDiet;
     private Button bCall, bMap;
     private LinearLayout linearLayout;
-
+    private DatabaseHelper dbHelper;
     private FirebaseAuth firebaseAuth;
     private Uri imageUri;
 
@@ -126,18 +138,8 @@ public class CuisineDetails extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if(isClicked){
-                    removeFavourite();
-                    view.setBackgroundResource(R.drawable.ic_fav_outline);
-
-                }else{
-
-                    addFavourite();
-                    view.setBackgroundResource(R.drawable.ic_fav_solid);
-
-                }
-
-                isClicked =!isClicked;
+                int position=0;
+                showPopupMenu(ivFavourite, position);
             }
         });
 
@@ -193,29 +195,64 @@ public class CuisineDetails extends AppCompatActivity {
 
     }
 
-    private void isFavourite() {
-        favReference = mDatabaseReference.child("name");
-        final String name  = getIntent().getStringExtra("name");
-        favReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot data: dataSnapshot.getChildren()){
-                    if (data.child(name).exists()) {
-                        Snackbar snackbar = Snackbar.make(linearLayout, "Favourite already exists", Snackbar.LENGTH_LONG);
-                        snackbar.show();
-                    } else {
-                        addFavourite();
-                    }
-                }
+//    private void isFavourite() {
+//        favReference = mDatabaseReference.child("name");
+//        final String name  = getIntent().getStringExtra("name");
+//        favReference.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                for(DataSnapshot data: dataSnapshot.getChildren()){
+//                    if (data.child(name).exists()) {
+//                        Snackbar snackbar = Snackbar.make(linearLayout, "Favourite already exists", Snackbar.LENGTH_LONG);
+//                        snackbar.show();
+//                    } else {
+//                        addFavourite();
+//                    }
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//    }
 
+    private void showPopupMenu(View view,int position) {
+        // inflate menu
+        PopupMenu popup = new PopupMenu(view.getContext(),view );
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.popup_menu, popup.getMenu());
+        popup.setOnMenuItemClickListener(new MenuItemClickListener(position));
+        popup.show();
+    }
+
+    class MenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
+
+        private int position;
+        public MenuItemClickListener(int position) {
+            this.position=position;
+        }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            switch (menuItem.getItemId()) {
+
+                case R.id.menu_favourites:
+                    addFavourite();
+
+
+                    return true;
+                case R.id.menu_share:
+
+                    return true;
+
+                default:
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
+            return false;
+        }
     }
 
     private void addFavourite(){
@@ -233,12 +270,14 @@ public class CuisineDetails extends AppCompatActivity {
             final String description  = getIntent().getStringExtra("description");
             final String ingredients  = getIntent().getStringExtra("ingredients");
             final String diet = getIntent().getStringExtra("diet");
+            String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
 
             InputStream is = getConnection(imageUrl);
 
             if (is != null ) {
                 StorageReference sref = mStorageReference.child(mStoragePath + System.currentTimeMillis());
-                //    + "." + getFileExtension(mFilePathUri));
+
 
                 sref.putStream(is)
 
@@ -276,7 +315,7 @@ public class CuisineDetails extends AppCompatActivity {
                         .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-
+                                mProgressDialog.dismiss();
 
                             }
                         });
@@ -337,3 +376,26 @@ public class CuisineDetails extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
+
+//Adding Favs to SQLite
+
+//        dbHelper = new DatabaseHelper(this);
+//        SQLiteDatabase db = dbHelper.getReadableDatabase();
+//        ContentValues values = new ContentValues();
+//        values.put(FavouritesDB.COLUMN_IMAGE, imageUrl);
+//        values.put(FavouritesDB.COLUMN_NAME, name);
+//        values.put(FavouritesDB.COLUMN_PRICE, price);
+//        values.put(FavouritesDB.COLUMN_DESCRIPTION, description);
+//        values.put(FavouritesDB.COLUMN_INGREDIENTS, ingredients);
+//        values.put(FavouritesDB.COLUMN_DIET, diet);
+//
+//        long id = db.insert(FavouritesDB.TABLE_NAME, null, values);
+//
+//
+//        String favs = "SELECT  * FROM "  + FavouritesDB.TABLE_NAME;
+//        Cursor cursor = db.rawQuery(favs, null);
+//
+//        String str = DatabaseUtils.dumpCursorToString(cursor);
+//        System.out.println("this is it: " + str);
+//
+//        db.close();

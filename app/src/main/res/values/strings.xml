@@ -41,6 +41,8 @@
     <string name="add">Add</string>
     <string name="filter">Filter</string>
     <string name="search_results">Search...</string>
+    <string name="add_favs">Add to Favourites</string>
+    <string name="share">Share</string>
 
 
     <!-- TODO: Remove or change this placeholder text -->
