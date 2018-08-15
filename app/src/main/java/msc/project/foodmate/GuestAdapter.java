@@ -10,8 +10,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -21,29 +19,28 @@ import java.util.List;
  * Created by Jackie Moraa on 7/12/2018.
  */
 
-public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.ImageViewHolder> {
+public class GuestAdapter extends RecyclerView.Adapter<GuestAdapter.ImageViewHolder> {
 
     private Context mContext;
-    private List<FavouritesUpload> mFavouritesUpload;
-    private DatabaseReference databaseReference;
+    private List<CuisineUploads> mCuisineUploads;
 
 
-    public FavouritesAdapter(Context context, List<FavouritesUpload> favouritesUploads){
+    public GuestAdapter(Context context, List<CuisineUploads> cuisineUploads){
         mContext = context;
-        mFavouritesUpload = favouritesUploads;
+        mCuisineUploads = cuisineUploads;
     }
 
     @Override
     public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.favourites_items, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_items, parent, false);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("favouriteCuisines");
+
         return  new ImageViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(ImageViewHolder holder, final int position) {
-        final FavouritesUpload uploadCurrent = mFavouritesUpload.get(position);
+        final CuisineUploads uploadCurrent = mCuisineUploads.get(position);
         Picasso.get()
                 .load(uploadCurrent.getImageUri())
                 .into(holder.ivCuisine);
@@ -57,9 +54,9 @@ public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.Im
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("Clicked on: " + mFavouritesUpload.get(position));
+                System.out.println("Clicked on: " + mCuisineUploads.get(position));
 
-                Intent intent = new Intent(mContext, CuisineDetails.class);
+                Intent intent = new Intent(mContext, GuestCuisineDetails.class);
                 intent.putExtra("imageUrl", uploadCurrent.getImageUri());
                 intent.putExtra("name", uploadCurrent.getName());
                 intent.putExtra("description", uploadCurrent.getDescription());
@@ -76,7 +73,7 @@ public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.Im
 
     @Override
     public int getItemCount() {
-        return mFavouritesUpload.size();
+        return mCuisineUploads.size();
     }
 
     public class ImageViewHolder extends RecyclerView.ViewHolder{
@@ -99,18 +96,12 @@ public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.Im
         }
     }
 
-    public void removeItem(int position) {
-        mFavouritesUpload.remove(position);
-        // notify the item removed by position
-        // to perform recycler view delete animations
-        // NOTE: don't call notifyDataSetChanged()
-        notifyItemRemoved(position);
-    }
+    public void searchList(List<CuisineUploads> newList){
+        mCuisineUploads = new ArrayList<>();
+        mCuisineUploads.addAll(newList);
+        notifyDataSetChanged();
 
-    public void getRef(DatabaseReference ref) {
-        databaseReference = ref;
     }
-
 
 
 }

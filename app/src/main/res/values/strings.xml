@@ -58,6 +58,27 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_settings">Settings</string>
 
+    <!-- Strings related to Introduction Slides -->
+    <string name="title_activity_welcome">Home Screen</string>
+    <string name="next">NEXT</string>
+    <string name="skip">SKIP</string>
+    <string name="start">GOT IT</string>
+
+    <string name="slide_1_title">Food Mate!</string>
+    <string name="slide_1_desc">The easiest way to order find cuisines that meet your dietary requirements from your favourite restaurant!</string>
+
+    <string name="slide_2_title">Complete Your Profile</string>
+    <string name="slide_2_desc">Set up your food profile by filling in your dietary requirements</string>
+
+    <string name="slide_3_title">Search Cuisines</string>
+    <string name="slide_3_desc">Get cuisines that best match your requirements from the extensive cuisines offered in various restaurants</string>
+
+    <string name="slide_4_title">Select Cuisine</string>
+    <string name="slide_4_desc">Filter the results and select a dish you would like. Contact the restaurant and reserve your space. Enjoy!</string>
+
+    <string name="play_again_desc">To see the welcome slider again, goto Settings -> apps -> welcome slider -> clear data</string>
+    <string name="play_again">Play Again</string>
+
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->

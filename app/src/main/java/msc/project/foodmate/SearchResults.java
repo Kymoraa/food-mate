@@ -135,7 +135,6 @@ public class SearchResults extends Fragment{
                 recyclerView.setAdapter(searchAdapter);
 
                 resultsMatch();
-                toggleEmptyResults();
 
             }
 
@@ -330,15 +329,6 @@ public class SearchResults extends Fragment{
 
     }
 
-    private void toggleEmptyResults() {
-//        // you can check List.size() > 0
-//
-//        if (mCuisineUploads.size() > 0) {
-//            tvNoEntries.setVisibility(View.GONE);
-//        } else {
-//            tvNoEntries.setVisibility(View.VISIBLE);
-//        }
-    }
 
 
     //menu items - filter/search recycler view results

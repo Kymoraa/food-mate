@@ -121,7 +121,7 @@ public class MainProfile extends Fragment {
         cvIngredients.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                aBar.setTitle(R.string.ingredients);
+                aBar.setTitle("Excluded Ingredients");
                 Ingredients ingredients = new Ingredients();
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .replace(R.id.frameLayout, ingredients,"Find This Fragment")

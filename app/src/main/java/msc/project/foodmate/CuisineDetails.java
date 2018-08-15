@@ -66,7 +66,7 @@ public class CuisineDetails extends AppCompatActivity {
     private Uri imageUri;
 
     StorageReference mStorageReference;
-    DatabaseReference mDatabaseReference, favReference;
+    DatabaseReference mDatabaseReference;
 
     String mStoragePath = "favouriteCuisines/";
     String mDatabasePath = "favouriteCuisines";
@@ -98,7 +98,7 @@ public class CuisineDetails extends AppCompatActivity {
 
         mStorageReference = FirebaseStorage.getInstance().getReference();
         mDatabaseReference = FirebaseDatabase.getInstance().getReference(mDatabasePath);
-        favReference = FirebaseDatabase.getInstance().getReference(mDatabasePath);
+
 
         mProgressDialog = new ProgressDialog(this);
 
@@ -195,31 +195,6 @@ public class CuisineDetails extends AppCompatActivity {
 
     }
 
-//    private void isFavourite() {
-//        favReference = mDatabaseReference.child("name");
-//        final String name  = getIntent().getStringExtra("name");
-//        favReference.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                for(DataSnapshot data: dataSnapshot.getChildren()){
-//                    if (data.child(name).exists()) {
-//                        Snackbar snackbar = Snackbar.make(linearLayout, "Favourite already exists", Snackbar.LENGTH_LONG);
-//                        snackbar.show();
-//                    } else {
-//                        addFavourite();
-//                    }
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//
-//    }
-
     private void showPopupMenu(View view,int position) {
         // inflate menu
         PopupMenu popup = new PopupMenu(view.getContext(),view );
@@ -241,7 +216,7 @@ public class CuisineDetails extends AppCompatActivity {
             switch (menuItem.getItemId()) {
 
                 case R.id.menu_favourites:
-                    addFavourite();
+                    isFavourite();
 
 
                     return true;
@@ -253,6 +228,43 @@ public class CuisineDetails extends AppCompatActivity {
             }
             return false;
         }
+    }
+
+
+
+    private void isFavourite() {
+
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("favouriteCuisines");
+
+        final String name  = getIntent().getStringExtra("name");
+        final String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean isFavourite = false;
+                for(DataSnapshot data: dataSnapshot.getChildren()){
+                    String cuisineName = data.child("name").getValue(String.class);
+                    String user = data.child("userId").getValue(String.class);
+
+                    if (name.equals(cuisineName)&&currentUser.equals(user)) {
+                        isFavourite = true;
+                        Snackbar snackbar = Snackbar.make(linearLayout, "Favourite already exists", Snackbar.LENGTH_LONG);
+                        snackbar.show();
+                        break;
+                    }
+                }
+                if(!isFavourite) {
+                    addFavourite();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private void addFavourite(){
@@ -270,21 +282,18 @@ public class CuisineDetails extends AppCompatActivity {
             final String description  = getIntent().getStringExtra("description");
             final String ingredients  = getIntent().getStringExtra("ingredients");
             final String diet = getIntent().getStringExtra("diet");
-            String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-
+            final String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
             InputStream is = getConnection(imageUrl);
+
 
             if (is != null ) {
                 StorageReference sref = mStorageReference.child(mStoragePath + System.currentTimeMillis());
-
-
                 sref.putStream(is)
 
                         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                CuisineUploads cuisineUploads = new CuisineUploads(name, price, description, ingredients,
+                                FavouritesUpload favouritesUpload = new FavouritesUpload(userUid,name, price, description, ingredients,
                                         taskSnapshot.getStorage().getDownloadUrl().toString(), diet);
 
 
@@ -297,7 +306,7 @@ public class CuisineDetails extends AppCompatActivity {
                                 //getting image ID
                                 String imageUploadID = mDatabaseReference.push().getKey();
                                 //uploading it into database reference
-                                mDatabaseReference.child(imageUploadID).setValue(cuisineUploads);
+                                mDatabaseReference.child(imageUploadID).setValue(favouritesUpload);
                             }
                         })
                         //if something goes wrong
@@ -326,13 +335,6 @@ public class CuisineDetails extends AppCompatActivity {
 
 
         }
-
-    }
-
-
-    private void removeFavourite(){
-        Snackbar snackbar = Snackbar.make(linearLayout, "Removed from favourites", Snackbar.LENGTH_LONG);
-        snackbar.show ();
 
     }
 
@@ -376,26 +378,3 @@ public class CuisineDetails extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
-
-//Adding Favs to SQLite
-
-//        dbHelper = new DatabaseHelper(this);
-//        SQLiteDatabase db = dbHelper.getReadableDatabase();
-//        ContentValues values = new ContentValues();
-//        values.put(FavouritesDB.COLUMN_IMAGE, imageUrl);
-//        values.put(FavouritesDB.COLUMN_NAME, name);
-//        values.put(FavouritesDB.COLUMN_PRICE, price);
-//        values.put(FavouritesDB.COLUMN_DESCRIPTION, description);
-//        values.put(FavouritesDB.COLUMN_INGREDIENTS, ingredients);
-//        values.put(FavouritesDB.COLUMN_DIET, diet);
-//
-//        long id = db.insert(FavouritesDB.TABLE_NAME, null, values);
-//
-//
-//        String favs = "SELECT  * FROM "  + FavouritesDB.TABLE_NAME;
-//        Cursor cursor = db.rawQuery(favs, null);
-//
-//        String str = DatabaseUtils.dumpCursorToString(cursor);
-//        System.out.println("this is it: " + str);
-//
-//        db.close();

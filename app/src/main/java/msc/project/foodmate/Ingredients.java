@@ -24,6 +24,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import msc.project.foodmate.database.DatabaseHelper;
 import msc.project.foodmate.database.model.IngredientDB;
@@ -230,21 +232,30 @@ public class Ingredients extends Fragment {
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Show toast message when no text is entered
+                // Show toast message when no text is entered; when special characters are used
+                Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+                Matcher m = p.matcher(inputIngredient.getText().toString());
+                boolean b = m.find();
+
                 if (TextUtils.isEmpty(inputIngredient.getText().toString())) {
                     Toast.makeText(getActivity(), "Enter diet...", Toast.LENGTH_SHORT).show();
                     return;
-                } else {
+                } else if (b){
+                    Toast.makeText(getActivity(), "Enter one ingredient at a time. Avoid special characters", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                else {
                     alertDialog.dismiss();
                 }
 
-                // check if user updating note
+                // check if user updating ingredient
                 if (shouldUpdate && ingredient != null) {
-                    // update note by it's id
-                    updateIngredient(inputIngredient.getText().toString(), position);
+                    // update ingredient by it's id
+                    updateIngredient(inputIngredient.getText().toString().trim(), position);
                 } else {
-                    // create new note
-                    createIngredient(inputIngredient.getText().toString());
+                    // create new ingredient
+                    createIngredient(inputIngredient.getText().toString().trim());
                 }
             }
         });

@@ -3,6 +3,7 @@ package msc.project.foodmate;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -55,6 +56,7 @@ public class RestaurantAdd extends Fragment {
     private ImageView ivCuisine;
     private EditText etCuisineName, etPrice, etDescription, etIngredients, etDiet;
     private StorageTask uploadTask;
+    private FloatingActionButton fab;
 
     String mStoragePath = "cuisineUploads/";
     String mDatabasePath = "cuisineUploads";
@@ -81,7 +83,8 @@ public class RestaurantAdd extends Fragment {
         frameLayout = view.findViewById(R.id.frameLayout);
 
         ivCuisine = view.findViewById(R.id.ivCuisine);
-        ivCuisine.setOnClickListener(new View.OnClickListener() {
+        fab = view.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openFileChooser();

@@ -1,8 +1,11 @@
 package msc.project.foodmate;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -22,6 +25,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.ProviderQueryResult;
 
 import java.util.regex.Pattern;
 
@@ -162,6 +166,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                             }
                         }else{
 
+                            checkUser();
                             Snackbar snackbar = Snackbar.make(linearLayout, "Registration failed. Please try again", Snackbar.LENGTH_LONG);
                             snackbar.show ();
                         }
@@ -170,6 +175,25 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                     }
                 });
 
+    }
+
+    public void checkUser(){
+        firebaseAuth.fetchProvidersForEmail(etEmail.getText().toString())
+                .addOnCompleteListener(new OnCompleteListener<ProviderQueryResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<ProviderQueryResult> task) {
+
+                        boolean check = !task.getResult().getProviders().isEmpty();
+
+                        if(!check){
+
+                        }else{
+
+                            Toast.makeText(Register.this, "User already exists!", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                });
     }
 
     /**
@@ -251,6 +275,16 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
         }
 
+
+    }
+
+
+//checking for internet connectivity... *Incomplete - toast of there is no internet
+    public boolean isOnline(Context context) {
+
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
 
     }
 

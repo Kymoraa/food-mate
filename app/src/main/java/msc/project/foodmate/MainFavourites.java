@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -23,15 +25,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import msc.project.foodmate.database.DatabaseHelper;
 import msc.project.foodmate.database.model.DietDB;
@@ -66,11 +73,16 @@ public class MainFavourites extends Fragment{
 
     private RecyclerView recyclerView;
     private FavouritesAdapter favouritesAdapter;
-    private DatabaseReference databaseReference;
-    private List<CuisineUploads> mCuisineUploads;
+    private List<FavouritesUpload> mFavouritesUpload;
     private TextView tvNoEntries;
+    private RelativeLayout relativeLayout;
+
+    private FirebaseStorage mStorage;
+    private DatabaseReference databaseReference;
+    private ValueEventListener mDBListener;
 
     private Context mContext;
+
 
     public MainFavourites() {
         // Required empty public constructor
@@ -107,38 +119,46 @@ public class MainFavourites extends Fragment{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.main_favourites, container, false);
 
+        relativeLayout = view.findViewById(R.id.relativeLayout);
+        tvNoEntries = view.findViewById(R.id.tvNoEntries);
+
+        final String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mStorage = FirebaseStorage.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference("favouriteCuisines");
 
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        mCuisineUploads= new ArrayList<>();
-        tvNoEntries = view.findViewById(R.id.tvNoEntries);
+        mFavouritesUpload= new ArrayList<>();
+        favouritesAdapter = new FavouritesAdapter(getActivity(), mFavouritesUpload);
+        recyclerView.setAdapter(favouritesAdapter);
 
-        String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("favouriteCuisines");
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
+
+        mDBListener = databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mFavouritesUpload.clear();
+
                 for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
-                    CuisineUploads cuisineUploads = postSnapshot.getValue(CuisineUploads.class);
+                    FavouritesUpload favouritesUpload = postSnapshot.getValue(FavouritesUpload.class);
+                    favouritesUpload.setKey(postSnapshot.getKey());
 
-                   String name = postSnapshot.child("name").getValue(String.class);
+                    String user = postSnapshot.child("userId").getValue(String.class);
 
-                   if(name.contains("Corn")) {
+                    if(userUid.equals(user)) {
 
-                       mCuisineUploads.add(cuisineUploads);
-                   }
+                       mFavouritesUpload.add(favouritesUpload);
+                    }
                 }
 
-
-                favouritesAdapter = new FavouritesAdapter(getActivity(), mCuisineUploads);
-                recyclerView.setAdapter(favouritesAdapter);
+                favouritesAdapter.notifyDataSetChanged();
 
                 toggleEmptyList();
-
 
             }
 
@@ -152,13 +172,59 @@ public class MainFavourites extends Fragment{
         return view;
     }
 
+    //Swiping recyclerview
+    ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.DOWN | ItemTouchHelper.UP) {
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            //Toast.makeText(getActivity(), "on Move", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+
+            final int position = viewHolder.getAdapterPosition();
+
+            FavouritesUpload selectedItem = mFavouritesUpload.get(position);
+            final String selectedKey = selectedItem.getKey();
+            StorageReference imageRef = mStorage.getReferenceFromUrl(selectedItem.getImageUri());
+            imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    databaseReference.child(selectedKey).removeValue();
+                    Snackbar snackbar = Snackbar.make(relativeLayout,  "Removed from favourites", Snackbar.LENGTH_LONG);
+                    snackbar.show();
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Snackbar snackbar = Snackbar.make(relativeLayout,  "Failed to remove from favourites", Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }
+            });
+
+
+
+
+        }
+    };
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        databaseReference.removeEventListener(mDBListener);
+    }
+
     /**
      * Toggling list and empty favourites view
      */
     private void toggleEmptyList() {
         // you can check favouritesList.size() > 0
 
-        if (mCuisineUploads.size() > 0) {
+        if (mFavouritesUpload.size() > 0) {
             tvNoEntries.setVisibility(View.GONE);
         } else {
             tvNoEntries.setVisibility(View.VISIBLE);

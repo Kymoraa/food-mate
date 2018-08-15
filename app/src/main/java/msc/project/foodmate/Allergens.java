@@ -24,6 +24,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import msc.project.foodmate.database.DatabaseHelper;
 import msc.project.foodmate.database.model.AllergenDB;
@@ -229,21 +231,28 @@ public class Allergens extends Fragment {
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Show toast message when no text is entered
+                // Show toast message when no text is entered; when special characters are used
+                Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+                Matcher m = p.matcher(inputAllergen.getText().toString());
+                boolean b = m.find();
+
                 if (TextUtils.isEmpty(inputAllergen.getText().toString())) {
                     Toast.makeText(getActivity(), "Enter allergen...", Toast.LENGTH_SHORT).show();
                     return;
-                } else {
+                }else if (b){
+                    Toast.makeText(getActivity(), "Enter one diet at a time. Avoid special characters", Toast.LENGTH_SHORT).show();
+                    return;
+                }else {
                     alertDialog.dismiss();
                 }
 
                 // check if user updating allergen
                 if (shouldUpdate && allergen != null) {
                     // update allergen by it's id
-                    updateAllergen(inputAllergen.getText().toString(), position);
+                    updateAllergen(inputAllergen.getText().toString().trim(), position);
                 } else {
                     // create new allergen
-                    createAllergen(inputAllergen.getText().toString());
+                    createAllergen(inputAllergen.getText().toString().trim());
                 }
             }
         });

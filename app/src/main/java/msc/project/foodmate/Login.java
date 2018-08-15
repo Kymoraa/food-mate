@@ -106,6 +106,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
 
         if (view == tvGuest){
             //open the activity to proceed as guest
+            finish();
+            Intent intent = new Intent(Login.this, Guest.class);
+            startActivity(intent);
         }
 
     }
