@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -122,6 +124,8 @@ public class MainFavourites extends Fragment{
         relativeLayout = view.findViewById(R.id.relativeLayout);
         tvNoEntries = view.findViewById(R.id.tvNoEntries);
 
+
+
         final String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         mStorage = FirebaseStorage.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference("favouriteCuisines");
@@ -136,7 +140,7 @@ public class MainFavourites extends Fragment{
         favouritesAdapter = new FavouritesAdapter(getActivity(), mFavouritesUpload);
         recyclerView.setAdapter(favouritesAdapter);
 
-
+        isOnline();
 
 
         mDBListener = databaseReference.addValueEventListener(new ValueEventListener() {
@@ -184,26 +188,36 @@ public class MainFavourites extends Fragment{
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
 
-            final int position = viewHolder.getAdapterPosition();
+            try {
 
-            FavouritesUpload selectedItem = mFavouritesUpload.get(position);
-            final String selectedKey = selectedItem.getKey();
-            StorageReference imageRef = mStorage.getReferenceFromUrl(selectedItem.getImageUri());
-            imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    databaseReference.child(selectedKey).removeValue();
-                    Snackbar snackbar = Snackbar.make(relativeLayout,  "Removed from favourites", Snackbar.LENGTH_LONG);
-                    snackbar.show();
+                final int position = viewHolder.getAdapterPosition();
 
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Snackbar snackbar = Snackbar.make(relativeLayout,  "Failed to remove from favourites", Snackbar.LENGTH_LONG);
-                    snackbar.show();
-                }
-            });
+                FavouritesUpload selectedItem = mFavouritesUpload.get(position);
+                final String selectedKey = selectedItem.getKey();
+                StorageReference imageRef = mStorage.getReferenceFromUrl(selectedItem.getImageUri());
+                imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        databaseReference.child(selectedKey).removeValue();
+//                        Snackbar snackbar = Snackbar.make(relativeLayout, "Removed from favourites", Snackbar.LENGTH_LONG);
+//                        snackbar.show();
+
+                        Toast.makeText(getActivity(), "Removed from favourites", Toast.LENGTH_SHORT).show();
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+//                        Snackbar snackbar = Snackbar.make(relativeLayout, "Failed to remove from favourites", Snackbar.LENGTH_LONG);
+//                        snackbar.show();
+                        Toast.makeText(getActivity(), "Failed to remove from favourites", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }catch(Exception e){
+//                Snackbar snackbar = Snackbar.make(relativeLayout, e.getMessage() + ": Failed to remove from favourites", Snackbar.LENGTH_LONG);
+//                snackbar.show();
+                Toast.makeText(getActivity(), e.getMessage() + ": Failed to remove from favourites", Toast.LENGTH_SHORT).show();
+            }
 
 
 
@@ -229,6 +243,18 @@ public class MainFavourites extends Fragment{
         } else {
             tvNoEntries.setVisibility(View.VISIBLE);
         }
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
+        }
+        else{
+            Toast.makeText(getActivity(), "You appear to be offline", Toast.LENGTH_SHORT).show();
+        }
+        return false;
     }
 
 

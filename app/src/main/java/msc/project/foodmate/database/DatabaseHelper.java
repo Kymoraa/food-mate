@@ -24,13 +24,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 4;
 
     // Database Name
-    private static final String DATABASE_NAME = "food_mate";
+    public static final String DATABASE_NAME = "food_mate";
 
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
 
     }
+
 
     // Creating Tables
     @Override
@@ -63,16 +64,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public long insertDiet(String diet) {
+        long id = -10;
+        boolean numeric = true;
+
+        numeric = diet.matches ("-?\\d+(\\.\\d+)?");
         // get writable database as we want to write data
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         // `id` and `timestamp` will be inserted automatically.
         // no need to add them
-        values.put(DietDB.COLUMN_DIET, diet);
 
-        // insert row
-        long id = db.insert(DietDB.TABLE_NAME, null, values);
+        if(!numeric){
+            values.put(DietDB.COLUMN_DIET, diet);
+            // insert row
+            id = db.insert(DietDB.TABLE_NAME, null, values);
+        }
 
         // close db connection
         db.close();

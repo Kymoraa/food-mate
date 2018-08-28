@@ -78,12 +78,13 @@ public class Guest extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId()== R.id.menu_settings){
-            Snackbar snackbar = Snackbar.make(relativeLayout, "Settings...", Snackbar.LENGTH_LONG);
-            snackbar.show ();
+            startActivity(new Intent(this, SettingsActivity.class));
         }
         if(item.getItemId()== R.id.menu_about){
-            Snackbar snackbar = Snackbar.make(relativeLayout, "About...", Snackbar.LENGTH_LONG);
-            snackbar.show ();
+            startActivity(new Intent(this, About.class));
+        }
+        if(item.getItemId()== R.id.menu_help){
+            startActivity(new Intent(this, HelpFAQs.class));
         }
         if(item.getItemId()== R.id.menu_sign_in){
             startActivity(new Intent(this, Login.class));

@@ -2,9 +2,12 @@ package msc.project.foodmate;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -47,6 +51,7 @@ public class MainHome extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private ProgressDialog progressDialog;
+    private RelativeLayout relativeLayout;
 
     //for the recyclerView
     FirebaseDatabase database;
@@ -92,12 +97,13 @@ public class MainHome extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-       // return inflater.inflate(R.layout.main_home, container, false);
+
         View view = inflater.inflate(R.layout.main_home, container, false);
 
         progressDialog = new ProgressDialog(getActivity());
+        relativeLayout = view.findViewById(R.id.relativeLayout);
 
+        isOnline();
 
         bSearch = view.findViewById(R.id.bSearch);
         bSearch.setOnClickListener(new View.OnClickListener() {
@@ -128,7 +134,6 @@ public class MainHome extends Fragment {
                         .commit();
 
 
-
             }
         });
 
@@ -157,7 +162,6 @@ public class MainHome extends Fragment {
                     list.add(value);
 
                 }
-
                 PopularAdapter popularAdapter = new PopularAdapter(list, getActivity());
                 recycle.setAdapter(popularAdapter);
 
@@ -212,5 +216,18 @@ public class MainHome extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
+        }
+        else{
+
+            Toast.makeText(getActivity(), "You appear to be offline", Toast.LENGTH_SHORT).show();
+        }
+        return false;
     }
 }

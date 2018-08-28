@@ -68,6 +68,7 @@ public class RestaurantAdd extends Fragment {
     ProgressDialog mProgressDialog;
 
     int IMAGE_REQUEST_CODE = 5;
+    String imageUrl;
 
     public RestaurantAdd() {
         // Required empty public constructor
@@ -129,15 +130,14 @@ public class RestaurantAdd extends Fragment {
                 //set bitmap to imageview
                 ivCuisine.setImageBitmap(bitmap);
 
+
             }catch (Exception e){
-
                 Toast.makeText(getActivity(), e.getMessage(),Toast.LENGTH_SHORT).show();
-
             }
-
-
         }
     }
+
+
 
     //menu items - upload button
     @Override
@@ -181,7 +181,7 @@ public class RestaurantAdd extends Fragment {
 
             //create a second storage reference
 
-            StorageReference storageReference2 = mStorageReference.child(mStoragePath + System.currentTimeMillis() 
+            final StorageReference storageReference2 = mStorageReference.child(mStoragePath + System.currentTimeMillis()
                     + "." + getFileExtension(mFilePathUri));
 
             //adding addOnSuccessListener to Storage Reference
@@ -189,6 +189,17 @@ public class RestaurantAdd extends Fragment {
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                            storageReference2.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+//                            {
+//                                @Override
+//                                public void onSuccess(Uri downloadUrl)
+//                                {
+//                                    //do something with downloadurl
+//                                    imageUrl = downloadUrl.toString();
+//
+//                                }
+//                            });
+
                             //get the edit text values
                             String name = etCuisineName.getText().toString().trim();
                             String price = etPrice.getText().toString().trim();
@@ -203,8 +214,17 @@ public class RestaurantAdd extends Fragment {
                             Snackbar snackbar = Snackbar.make(frameLayout, "Upload successful", Snackbar.LENGTH_LONG);
                             snackbar.show ();
 
+                            RestaurantHome restaurantHome = new RestaurantHome();
+                            getActivity().getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.frameLayout, restaurantHome,"Find This Fragment")
+                                    .addToBackStack(null)
+                                    .commit();
+
+
                             CuisineUploads cuisineUploads = new CuisineUploads(name, price, description, ingredients,
-                                    taskSnapshot.getStorage().getDownloadUrl().toString(), diet);
+                                    //taskSnapshot.getStorage().getDownloadUrl().toString(),diet);
+                                    taskSnapshot.getMetadata().getReference().getDownloadUrl().toString(),diet);
+
 
                             //getting image ID
                             String imageUploadID = mDatabaseReference.push().getKey();

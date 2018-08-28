@@ -1,5 +1,7 @@
 package msc.project.foodmate;
 
+import com.google.firebase.database.Exclude;
+
 /**
  * Created by Jackie Moraa on 7/10/2018.
  */
@@ -7,6 +9,7 @@ package msc.project.foodmate;
 public class CuisineUploads {
 
     private String etCuisineName, etPrice, etDescription, etIngredients, ivImageUri, etDiet;
+    private String mKey;
 
     public CuisineUploads(){
         //this is an empty constructor
@@ -69,5 +72,13 @@ public class CuisineUploads {
 
     public void setDiet(String etDiet) {
         this.etDiet = etDiet;
+    }
+
+    @Exclude
+    public  String getKey(){return mKey;}
+
+    @Exclude
+    public void setKey(String key) {
+        mKey = key;
     }
 }

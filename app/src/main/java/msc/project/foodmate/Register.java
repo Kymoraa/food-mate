@@ -72,13 +72,10 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         bRegister.setOnClickListener(this);
 
         etEmail = (EditText) findViewById(R.id.etEmail);
-        etEmail.addTextChangedListener(new EmailTextWatcher(etEmail));
 
         etPassword = (EditText) findViewById(R.id.etPassword);
-        etPassword.addTextChangedListener(new PasswordTextWatcher(etPassword));
 
         etConfirmPassword = (EditText) findViewById(R.id.etConfirmPassword);
-        etConfirmPassword.addTextChangedListener(new ConfPasswordTextWatcher(etConfirmPassword));
 
         cbRestaurant = (CheckBox) findViewById(R.id.cbRestaurant);
         cbRestaurant.setChecked(false);
@@ -86,6 +83,9 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         cbRestaurant.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 // update your model (or other business logic) based on isChecked
+                Snackbar snackbar = Snackbar.make(linearLayout, "Note! Only applicable to verified restaurants", Snackbar.LENGTH_LONG);
+                snackbar.show ();
+                cbRestaurant.setChecked(false);
             }
         });
 
@@ -157,16 +157,20 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
                             //user is successfully registered
                             //open the account page to set up their profile
+                            Snackbar snackbar = Snackbar.make(linearLayout, "Quickly set up your preferences in your profile and you're good to go :) ", Snackbar.LENGTH_LONG);
+                            snackbar.show ();
                             finish();
 
                             if(email.equals("admin@restaurant.com")){
                                 startActivity(new Intent(getApplicationContext(), RestaurantMain.class));
                             }else {
                                 startActivity(new Intent(getApplicationContext(), Main.class));
+
                             }
                         }else{
 
                             checkUser();
+                            isOnline();
                             Snackbar snackbar = Snackbar.make(linearLayout, "Registration failed. Please try again", Snackbar.LENGTH_LONG);
                             snackbar.show ();
                         }
@@ -196,97 +200,18 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                 });
     }
 
-    /**
-     * TextWatcher - set the fonts for edit texts with hints
-     * 1. email
-     * 2. password
-     * 3. confirm password
-     */
-    public class EmailTextWatcher implements TextWatcher {
-        public EmailTextWatcher(EditText e) {
-            etEmail = e;
-            etEmail.setTypeface(Typeface.SERIF);
-        }
-
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            etEmail.setTypeface(Typeface.SERIF);
-        }
-
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            etEmail.setTypeface(Typeface.SERIF);
-        }
-
-        public void afterTextChanged(Editable s) {
-            if(s.length() == 0){
-                etEmail.setTypeface(Typeface.SERIF);
-            } else {
-                etEmail.setTypeface(Typeface.SERIF);
-            }
-
-        }
-
+//checking for internet connectivity
+public boolean isOnline() {
+    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    NetworkInfo netInfo = cm.getActiveNetworkInfo();
+    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+        return true;
     }
-
-    public class PasswordTextWatcher implements TextWatcher {
-        public PasswordTextWatcher(EditText p) {
-            etPassword = p;
-            etPassword.setTypeface(Typeface.SERIF);
-        }
-
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            etPassword.setTypeface(Typeface.SERIF);
-        }
-
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            etPassword.setTypeface(Typeface.SERIF);
-        }
-
-        public void afterTextChanged(Editable s) {
-            if(s.length() == 0){
-                etPassword.setTypeface(Typeface.SERIF);
-            } else {
-                etPassword.setTypeface(Typeface.SERIF);
-            }
-
-        }
-
+    else{
+        Toast.makeText(Register.this, "You appear to be offline", Toast.LENGTH_SHORT).show();
     }
-
-    public class ConfPasswordTextWatcher implements TextWatcher {
-        public ConfPasswordTextWatcher(EditText cp) {
-            etConfirmPassword = cp;
-            etConfirmPassword.setTypeface(Typeface.SERIF);
-        }
-
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            etConfirmPassword.setTypeface(Typeface.SERIF);
-        }
-
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            etConfirmPassword.setTypeface(Typeface.SERIF);
-        }
-
-        public void afterTextChanged(Editable s) {
-            if(s.length() == 0){
-                etConfirmPassword.setTypeface(Typeface.SERIF);
-            } else {
-                etConfirmPassword.setTypeface(Typeface.SERIF);
-            }
-
-        }
-
-
-    }
-
-
-//checking for internet connectivity... *Incomplete - toast of there is no internet
-    public boolean isOnline(Context context) {
-
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
-
-    }
+    return false;
+}
 
 
 }

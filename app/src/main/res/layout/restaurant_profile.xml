@@ -1,8 +1,12 @@
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:isScrollContainer="true"
+    android:id="@+id/frameLayout"
+    tools:context="msc.project.foodmate.RestaurantProfile">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -10,49 +14,90 @@
         android:isScrollContainer="true"
         android:padding="5dp">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="fill_parent">
 
+            <ImageView
+                android:id="@+id/ivRestaurant"
+                android:layout_width="fill_parent"
+                android:layout_height="200dp"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/ghost_button"
+                android:scaleType="fitXY"
+                />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/etRestaurantPhone"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="42dp"
+                android:clickable="true"
+                android:src="@drawable/ic_photo_camera"
 
-        <LinearLayout
-            android:id="@+id/viewA"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.4"
-            android:background="@android:color/holo_purple"
-            android:orientation="horizontal"/>
-
-        <LinearLayout
-            android:id="@+id/viewB"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.6"
-            android:background="@color/white"
-            android:orientation="vertical"/>
+                app:layout_anchorGravity="bottom|right|end" />
 
 
 
-    </LinearLayout>
+            <EditText
+                android:id="@+id/etRestaurantName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_below="@+id/ivRestaurant"
+                android:backgroundTint="@color/orange700"
+                android:ems="10"
+                android:hint="@string/restaurantName"
+                android:textColor="@color/grey"
+                android:fontFamily="sans-serif-light" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:clickable="true"
-        android:src="@drawable/ic_photo_camera"
-        app:layout_anchor="@id/viewA"
-        app:layout_anchorGravity="bottom|right|end"/>
 
-        </LinearLayout>
+            <EditText
+                android:id="@+id/etRestaurantPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/etRestaurantName"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:inputType="phone"
+                android:backgroundTint="@color/orange700"
+                android:ems="10"
+                android:hint="@string/restaurantPhoneNumber"
+                android:textColor="@color/grey"
+                android:fontFamily="sans-serif-light" />
+
+            <EditText
+                android:id="@+id/etRestaurantWebsite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/etRestaurantPhone"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:backgroundTint="@color/orange700"
+                android:ems="10"
+                android:hint="@string/restaurantWebsite"
+                android:textColor="@color/grey"
+                android:fontFamily="sans-serif-light" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_below="@+id/etDiet"/>
+
+
+
+        </RelativeLayout>
 
     </ScrollView>
 
-</android.support.design.widget.CoordinatorLayout>
+</FrameLayout>
+
+
+
+

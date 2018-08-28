@@ -135,8 +135,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 // last page. make button text to GOT IT
                 btnNext.setText(getString(R.string.start));
                 btnSkip.setVisibility(View.GONE);
-                btnSkip.setTypeface(Typeface.SANS_SERIF);
-                btnNext.setTypeface(Typeface.SANS_SERIF);
+
             } else {
                 // still pages are left
                 btnNext.setText(getString(R.string.next));

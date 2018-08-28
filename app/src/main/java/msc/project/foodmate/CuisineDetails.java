@@ -217,11 +217,10 @@ public class CuisineDetails extends AppCompatActivity {
 
                 case R.id.menu_favourites:
                     isFavourite();
-
-
                     return true;
-                case R.id.menu_share:
 
+                case R.id.menu_share:
+                    share();
                     return true;
 
                 default:
@@ -351,7 +350,15 @@ public class CuisineDetails extends AppCompatActivity {
         return is;
     }
 
-
+    public void share(){
+        Intent sendIntent = new Intent();
+        String msg = "Hey, check out this cuisine on Food Mate: " + tvCuisineName.getText()
+                +". Download here: https://www.foodmate.com/downloads";
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, msg);
+        sendIntent.setType("text/plain");
+        startActivity(sendIntent);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -362,12 +369,13 @@ public class CuisineDetails extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId()== R.id.menu_settings){
-            Snackbar snackbar = Snackbar.make(linearLayout, "Settings...", Snackbar.LENGTH_LONG);
-            snackbar.show ();
+            startActivity(new Intent(this, SettingsActivity.class));
         }
         if(item.getItemId()== R.id.menu_about){
-            Snackbar snackbar = Snackbar.make(linearLayout, "About...", Snackbar.LENGTH_LONG);
-            snackbar.show ();
+            startActivity(new Intent(this, About.class));
+        }
+        if(item.getItemId()== R.id.menu_help){
+            startActivity(new Intent(this, HelpFAQs.class));
         }
         if(item.getItemId()== R.id.menu_sign_out){
             firebaseAuth.signOut();

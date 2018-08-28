@@ -5,6 +5,7 @@
     tools:context="msc.project.foodmate.SearchResults">
 
     <RelativeLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

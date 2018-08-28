@@ -46,13 +46,27 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".Guest"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateVisible|adjustPan" />
         <activity
             android:name=".GuestResults"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".GuestCuisineDetails"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".About"
+            android:label="@string/about"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".HelpFAQs"
+            android:label="@string/help_faq"
+            android:theme="@style/AppTheme"
+            />
+
+        <activity
+            android:name=".TestFirebase"
+            />
     </application>
 
 </manifest>

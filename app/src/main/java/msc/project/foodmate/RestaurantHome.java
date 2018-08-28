@@ -1,22 +1,34 @@
 package msc.project.foodmate;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +58,10 @@ public class RestaurantHome extends Fragment {
     private RestaurantAdapter restaurantAdapter;
     private DatabaseReference databaseReference;
     private List<CuisineUploads> mCuisineUploads;
+    private ValueEventListener mDBListener;
+    private TextView tvNoEntries;
+    private RelativeLayout relativeLayout;
+    private FirebaseStorage mStorage;
 
 
     public RestaurantHome() {
@@ -84,27 +100,39 @@ public class RestaurantHome extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.restaurant_home, container, false);
+        databaseReference = FirebaseDatabase.getInstance().getReference("cuisineUploads");
+        tvNoEntries = view.findViewById(R.id.tvNoEntries);
+        relativeLayout = view.findViewById(R.id.relativeLayout);
+
+        mStorage = FirebaseStorage.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference("cuisineUploads");
 
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
         mCuisineUploads= new ArrayList<>();
+        restaurantAdapter = new RestaurantAdapter(getActivity(), mCuisineUploads);
+        recyclerView.setAdapter(restaurantAdapter);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("cuisineUploads");
+        isOnline();
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        mDBListener = databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mCuisineUploads.clear();
+
                 for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
                     CuisineUploads cuisineUploads = postSnapshot.getValue(CuisineUploads.class);
+                    cuisineUploads.setKey(postSnapshot.getKey());
                     mCuisineUploads.add(cuisineUploads);
                 }
 
+                restaurantAdapter.notifyDataSetChanged();
 
-                restaurantAdapter = new RestaurantAdapter(getActivity(), mCuisineUploads);
-
-                recyclerView.setAdapter(restaurantAdapter);
+                toggleEmptyList();
 
             }
 
@@ -116,6 +144,74 @@ public class RestaurantHome extends Fragment {
         });
 
         return view;
+    }
+
+    //Swiping recyclerview
+    ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.DOWN | ItemTouchHelper.UP) {
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+
+            try {
+
+                final int position = viewHolder.getAdapterPosition();
+
+                CuisineUploads selectedItem = mCuisineUploads.get(position);
+                final String selectedKey = selectedItem.getKey();
+                StorageReference imageRef = mStorage.getReferenceFromUrl(selectedItem.getImageUri());
+                imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        databaseReference.child(selectedKey).removeValue();
+                        Toast.makeText(getActivity(), "Cuisine item deleted", Toast.LENGTH_SHORT).show();
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getActivity(), "Failed to delete cuisine", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }catch(Exception e){
+                Toast.makeText(getActivity(), e.getMessage() + ": Failed to delete cuisine", Toast.LENGTH_SHORT).show();
+                System.out.println(e.getMessage());
+
+            }
+
+        }
+    };
+
+    private void toggleEmptyList() {
+        // you can check favouritesList.size() > 0
+
+        if (mCuisineUploads.size() > 0) {
+            tvNoEntries.setVisibility(View.GONE);
+        } else {
+            tvNoEntries.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
+        }
+        else{
+            Toast.makeText(getActivity(), "You appear to be offline", Toast.LENGTH_SHORT).show();
+        }
+        return false;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        databaseReference.removeEventListener(mDBListener);
     }
 
 

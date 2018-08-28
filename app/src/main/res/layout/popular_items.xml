@@ -1,7 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    >
 
     <android.support.v7.widget.CardView
         android:id="@+id/card_view"
@@ -13,6 +14,7 @@
         card_view:cardCornerRadius="3dp">
 
         <RelativeLayout
+            android:id="@+id/relativeLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -50,6 +52,33 @@
                 android:paddingTop="5dp"
                 android:fontFamily="sans-serif-light"
                 android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:textSize="1sp"
+                android:layout_below="@id/tvPrice"
+                android:textColor="@color/white"/>
+
+            <TextView
+                android:id="@+id/tvIngredients"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:textSize="1sp"
+                android:layout_below="@id/tvDescription"
+                android:textColor="@color/white"/>
+
+            <TextView
+                android:id="@+id/tvDiet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:textSize="1sp"
+                android:layout_below="@id/tvIngredients"
+                android:textColor="@color/white"/>
 
 
         </RelativeLayout>

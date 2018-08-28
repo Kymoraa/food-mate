@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,11 +73,11 @@ public class SearchResults extends Fragment{
     private List<CuisineUploads> mCuisineUploads;
     private EditText etSearch;
     private ProgressDialog progressDialog;
-
+    private ValueEventListener mDBListener;
     private DatabaseHelper dbHelper;
     private TextView tvNoEntries;
-
     private Context mContext;
+    private RelativeLayout relativeLayout;
 
     public SearchResults() {
         // Required empty public constructor
@@ -108,33 +111,40 @@ public class SearchResults extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.search_results, container, false);
 
-
+        tvNoEntries = view.findViewById(R.id.tvNoEntries);
+        tvNoEntries.setVisibility(View.GONE);
+        relativeLayout = view.findViewById(R.id.relativeLayout);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mCuisineUploads= new ArrayList<>();
-        tvNoEntries = view.findViewById(R.id.tvNoEntries);
-        tvNoEntries.setVisibility(View.GONE);
+        searchAdapter = new SearchAdapter(getActivity(), mCuisineUploads);
+        recyclerView.setAdapter(searchAdapter);
+
 
         databaseReference = FirebaseDatabase.getInstance().getReference("cuisineUploads");
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        isOnline();
+
+        mDBListener = databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mCuisineUploads.clear();
+
                 for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
                     CuisineUploads cuisineUploads = postSnapshot.getValue(CuisineUploads.class);
                     mCuisineUploads.add(cuisineUploads);
                 }
 
 
-                searchAdapter = new SearchAdapter(getActivity(), mCuisineUploads);
-                recyclerView.setAdapter(searchAdapter);
-
                 resultsMatch();
+                searchAdapter.notifyDataSetChanged();
 
             }
 
@@ -146,7 +156,7 @@ public class SearchResults extends Fragment{
         });
 
         etSearch = view.findViewById(R.id.etSearch);
-        etSearch.addTextChangedListener(new SearchTextWatcher(etSearch));
+ //       etSearch.addTextChangedListener(new SearchTextWatcher(etSearch));
         etSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -167,12 +177,15 @@ public class SearchResults extends Fragment{
                 List<CuisineUploads> newList = new ArrayList<>();
 
                 for(CuisineUploads newCuisine : mCuisineUploads){
-                    if(newCuisine.getName().toLowerCase().contains(userInput)){
+                    if(newCuisine.getName().toLowerCase().contains(userInput) ||
+                            newCuisine.getDiet().toLowerCase().contains(userInput)){
                         newList.add(newCuisine);
-                    }else{
+                        tvNoEntries.setVisibility(View.GONE);
+                        break;
+                    }else if(!newCuisine.getName().toLowerCase().contains(userInput) ||
+                            !newCuisine.getDiet().toLowerCase().contains(userInput)){
                         tvNoEntries.setVisibility(View.VISIBLE);
                     }
-
                 }
 
                 searchAdapter.searchList(newList);
@@ -329,7 +342,11 @@ public class SearchResults extends Fragment{
 
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        databaseReference.removeEventListener(mDBListener);
+    }
 
     //menu items - filter/search recycler view results
 
@@ -346,33 +363,6 @@ public class SearchResults extends Fragment{
         return super.onOptionsItemSelected(item);
     }
 
-
-    //Text watcher - Search EditText
-    public class SearchTextWatcher implements TextWatcher {
-        public SearchTextWatcher(EditText e) {
-            etSearch = e;
-            etSearch.setTypeface(Typeface.SANS_SERIF);
-
-        }
-
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            etSearch.setTypeface(Typeface.SANS_SERIF);
-        }
-
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            etSearch.setTypeface(Typeface.SANS_SERIF);
-        }
-
-        public void afterTextChanged(Editable s) {
-            if(s.length() == 0){
-                etSearch.setTypeface(Typeface.SANS_SERIF);
-            } else {
-                etSearch.setTypeface(Typeface.SANS_SERIF);
-            }
-
-        }
-
-    }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -413,5 +403,19 @@ public class SearchResults extends Fragment{
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
+        }
+        else{
+//            Snackbar snackbar = Snackbar.make(relativeLayout, "You appear to be offline", Snackbar.LENGTH_LONG);
+//            snackbar.show ();
+            Toast.makeText(mContext, "You appear to be offline", Toast.LENGTH_SHORT).show();
+        }
+        return false;
     }
 }

@@ -117,10 +117,14 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId()== R.id.menu_settings){
-            Toast.makeText(Main.this, "Settings... coming soon", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(Main.this, "Settings... coming soon", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, SettingsActivity.class));
         }
         if(item.getItemId()== R.id.menu_about){
-            Toast.makeText(Main.this, "About... coming soon", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, About.class));
+        }
+        if(item.getItemId()== R.id.menu_help){
+            startActivity(new Intent(this, HelpFAQs.class));
         }
         if(item.getItemId()== R.id.menu_sign_out){
             firebaseAuth.signOut();
@@ -130,4 +134,6 @@ public class Main extends AppCompatActivity implements NavigationView.OnNavigati
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 }

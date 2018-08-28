@@ -1,7 +1,8 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/relativeLayout"
     tools:context="msc.project.foodmate.RestaurantHome">
 
         <android.support.v7.widget.RecyclerView
@@ -9,4 +10,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/tvNoEntries"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/margin_top_no_notes"
+            android:fontFamily="sans-serif-light"
+            android:text="@string/msg_no_notes"
+            android:textColor="@color/msg_no_notes"
+            android:textSize="@dimen/msg_no_notes" />
+
+</RelativeLayout>

@@ -1,8 +1,11 @@
 package msc.project.foodmate;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -48,6 +51,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+        isOnline();
 
         linearLayout = findViewById(R.id.linearLayout);
 
@@ -71,11 +75,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
         bSignin.setOnClickListener(this);
 
         etEmail = (EditText) findViewById(R.id.etEmail);
-        etEmail.addTextChangedListener(new EmailTextWatcher(etEmail));
-
         etPassword = (EditText) findViewById(R.id.etPassword);
-        etPassword.addTextChangedListener(new PasswordTextWatcher(etPassword));
-
 
         tvRegister = (TextView) findViewById(R.id.tvRegister);
         tvRegister.setOnClickListener(this);
@@ -161,9 +161,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
                                 startActivity(new Intent(getApplicationContext(), Main.class));
                             }
                         }else{
-                            //Toast.makeText(Login.this, "Login failed. Please try again", Toast.LENGTH_SHORT).show();
+                            isOnline();
+
                             Snackbar snackbar = Snackbar.make(linearLayout, "Login failed. Please try again", Snackbar.LENGTH_LONG);
                             snackbar.show ();
+
                         }
 
                     }
@@ -171,61 +173,16 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
 
     }
 
-    /**
-     * TextWatcher - set the fonts for edit texts with hints
-     * 1. email
-     * 2. password
-     */
-    public class EmailTextWatcher implements TextWatcher {
-        public EmailTextWatcher(EditText e) {
-            etEmail = e;
-            etEmail.setTypeface(Typeface.SERIF);
+    public boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
         }
-
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            etEmail.setTypeface(Typeface.SERIF);
+        else{
+            Toast.makeText(Login.this, "You appear to be offline", Toast.LENGTH_SHORT).show();
         }
-
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            etEmail.setTypeface(Typeface.SERIF);
-        }
-
-        public void afterTextChanged(Editable s) {
-            if(s.length() == 0){
-                etEmail.setTypeface(Typeface.SERIF);
-            } else {
-                etEmail.setTypeface(Typeface.SERIF);
-            }
-
-        }
-
+        return false;
     }
-
-    public class PasswordTextWatcher implements TextWatcher {
-        public PasswordTextWatcher(EditText p) {
-            etPassword = p;
-            etPassword.setTypeface(Typeface.SERIF);
-        }
-
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            etPassword.setTypeface(Typeface.SERIF);
-        }
-
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            etPassword.setTypeface(Typeface.SERIF);
-        }
-
-        public void afterTextChanged(Editable s) {
-            if(s.length() == 0){
-                etPassword.setTypeface(Typeface.SERIF);
-            } else {
-                etPassword.setTypeface(Typeface.SERIF);
-            }
-
-        }
-
-
-    }
-
 
 }
