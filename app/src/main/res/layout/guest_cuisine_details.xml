@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="msc.project.foodmate.GuestCuisineDetails"
+    tools:context="msc.project.foodmate.classes.GuestCuisineDetails"
     android:orientation="vertical"
     android:id="@+id/linearLayout">
 

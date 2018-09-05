@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="msc.project.foodmate.Allergens">
+    tools:context="msc.project.foodmate.classes.Allergens">
 
     <include layout="@layout/content_main" />
 

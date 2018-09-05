@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/relativeLayout"
-    tools:context="msc.project.foodmate.RestaurantHome">
+    tools:context="msc.project.foodmate.classes.RestaurantHome">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"

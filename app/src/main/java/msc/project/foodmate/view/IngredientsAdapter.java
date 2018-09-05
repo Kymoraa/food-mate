@@ -20,6 +20,10 @@ import msc.project.foodmate.database.model.IngredientDB;
  * Created by Jackie Moraa on 8/1/2018.
  */
 
+/*
+ingredients adapter
+where the ingredients will be displayed from the database
+ */
 public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.MyViewHolder> {
 
     private Context context;
@@ -44,6 +48,7 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
         this.ingredientsList = ingredientsList;
     }
 
+    //view holder
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -70,7 +75,7 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
         return ingredientsList.size();
     }
 
-    /**
+    /*
      * Formatting timestamp to `MMM d` format
      * Input: 2018-02-21 00:15:42
      * Output: Feb 21

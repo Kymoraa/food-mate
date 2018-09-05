@@ -14,7 +14,7 @@
         android:logo="@drawable/foodmate_logo2"
         android:supportsRtl="true">
         <activity
-            android:name=".WelcomeActivity"
+            android:name=".classes.WelcomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,43 +23,45 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Login"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".classes.Login"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize"/>
         <activity
-            android:name=".Register"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".classes.Register"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize"/>
         <activity
-            android:name=".Main"
+            android:name=".classes.Main"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustNothing" />
         <activity
-            android:name=".RestaurantMain"
+            android:name=".classes.RestaurantMain"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateVisible|adjustPan" />
         <activity
-            android:name=".CuisineDetails"
+            android:name=".classes.CuisineDetails"
             android:label="@string/cuisinesDetails"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".classes.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".Guest"
+            android:name=".classes.Guest"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateVisible|adjustPan" />
         <activity
-            android:name=".GuestResults"
+            android:name=".classes.GuestResults"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".GuestCuisineDetails"
+            android:name=".classes.GuestCuisineDetails"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".About"
+            android:name=".classes.About"
             android:label="@string/about"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".HelpFAQs"
+            android:name=".classes.HelpFAQs"
             android:label="@string/help_faq"
             android:theme="@style/AppTheme"
             />

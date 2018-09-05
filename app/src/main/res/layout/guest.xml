@@ -6,7 +6,7 @@
     android:background="@color/white"
     android:isScrollContainer="true"
     android:id="@+id/frameLayout"
-    tools:context="msc.project.foodmate.Guest">
+    tools:context="msc.project.foodmate.classes.Guest">
 
     <RelativeLayout
         android:layout_width="match_parent"

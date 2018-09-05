@@ -4,6 +4,10 @@ package msc.project.foodmate.database.model;
  * Created by Jackie Moraa on 8/1/2018.
  */
 
+/*
+create the diets table in the SQLite database
+ */
+
 public class DietDB {
     public static final String TABLE_NAME = "diets";
 

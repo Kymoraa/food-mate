@@ -20,6 +20,10 @@ import msc.project.foodmate.database.model.DietDB;
  * Created by Jackie Moraa on 8/1/2018.
  */
 
+/*
+diets adapter
+where the diets will be displayed from the database
+ */
 public class DietsAdapter extends RecyclerView.Adapter<DietsAdapter.MyViewHolder> {
 
     private Context context;
@@ -44,6 +48,7 @@ public class DietsAdapter extends RecyclerView.Adapter<DietsAdapter.MyViewHolder
         this.dietsList = dietsList;
     }
 
+    //view holder
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())

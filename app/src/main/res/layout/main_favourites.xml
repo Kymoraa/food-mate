@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="msc.project.foodmate.MainFavourites">
+    tools:context="msc.project.foodmate.classes.MainFavourites">
 
     <RelativeLayout
         android:layout_width="match_parent"

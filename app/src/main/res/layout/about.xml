@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="msc.project.foodmate.About">
+    tools:context="msc.project.foodmate.classes.About">
 
     <ScrollView
         android:layout_width="fill_parent"

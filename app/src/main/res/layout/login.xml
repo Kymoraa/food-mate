@@ -1,6 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="msc.project.foodmate.Login"
+    tools:context="msc.project.foodmate.classes.Login"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:isScrollContainer="true"

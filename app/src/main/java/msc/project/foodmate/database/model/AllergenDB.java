@@ -4,9 +4,11 @@ package msc.project.foodmate.database.model;
  * Created by Jackie Moraa on 8/1/2018.
  */
 
+/*
+create the allergens table in the SQLite database
+ */
 public class AllergenDB {
     public static final String TABLE_NAME = "allergens";
-
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_ALLERGEN = "allergen";
     public static final String COLUMN_TIMESTAMP = "timestamp";

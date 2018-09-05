@@ -21,6 +21,10 @@ import msc.project.foodmate.database.model.AllergenDB;
  * Created by Jackie Moraa on 8/1/2018.
  */
 
+/*
+allergens adapter
+where the allergens will be displayed from the database
+ */
 public class AllergensAdapter extends RecyclerView.Adapter<AllergensAdapter.MyViewHolder> {
 
     private Context context;
@@ -45,6 +49,9 @@ public class AllergensAdapter extends RecyclerView.Adapter<AllergensAdapter.MyVi
         this.allergensList = allergensList;
     }
 
+    /*
+    view holder
+     */
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())

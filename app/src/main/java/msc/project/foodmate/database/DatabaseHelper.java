@@ -17,7 +17,9 @@ import msc.project.foodmate.database.model.IngredientDB;
 /**
  * Created by Jackie Moraa on 8/1/2018.
  */
-
+/*
+database helper class
+ */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Database Version
@@ -26,12 +28,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Database Name
     public static final String DATABASE_NAME = "food_mate";
 
-
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-
     }
-
 
     // Creating Tables
     @Override
@@ -67,13 +66,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long id = -10;
         boolean numeric = true;
 
-        numeric = diet.matches ("-?\\d+(\\.\\d+)?");
-        // get writable database as we want to write data
+        numeric = diet.matches(".*\\d+.*");
+        // get writable database to write the data
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        // `id` and `timestamp` will be inserted automatically.
-        // no need to add them
+        // id and timestamp will be inserted automatically.
 
         if(!numeric){
             values.put(DietDB.COLUMN_DIET, diet);
@@ -89,67 +87,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public long insertIngredient(String ingredient) {
-        // get writable database as we want to write data
         SQLiteDatabase db = this.getWritableDatabase();
-
         ContentValues values = new ContentValues();
-        // `id` and `timestamp` will be inserted automatically.
-        // no need to add them
         values.put(IngredientDB.COLUMN_INGREDIENT, ingredient);
-
-        // insert row
         long id = db.insert(IngredientDB.TABLE_NAME, null, values);
-
-        // close db connection
         db.close();
-
-        // return newly inserted row id
         return id;
     }
 
 
     public long insertAllergen(String allergen) {
-        // get writable database as we want to write data
         SQLiteDatabase db = this.getWritableDatabase();
-
         ContentValues values = new ContentValues();
-        // `id` and `timestamp` will be inserted automatically.
-        // no need to add them
         values.put(AllergenDB.COLUMN_ALLERGEN, allergen);
-
-        // insert row
         long id = db.insert(AllergenDB.TABLE_NAME, null, values);
-
-        // close db connection
         db.close();
-
-        // return newly inserted row id
-        return id;
-    }
-
-    //Add to favs
-    public long insertFavourite(String imageUri, String name, String price, String description, String ingredients, String diet) {
-        // get writable database as we want to write data
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        // `id` and `timestamp` will be inserted automatically.
-        // no need to add them
-        values.put(FavouritesDB.COLUMN_IMAGE, imageUri);
-        values.put(FavouritesDB.COLUMN_NAME, name);
-        values.put(FavouritesDB.COLUMN_PRICE, price);
-        values.put(FavouritesDB.COLUMN_DESCRIPTION, description);
-        values.put(FavouritesDB.COLUMN_INGREDIENTS, ingredients);
-        values.put(FavouritesDB.COLUMN_DIET, diet);
-
-
-        // insert row
-        long id = db.insert(FavouritesDB.TABLE_NAME, null, values);
-
-        // close db connection
-        db.close();
-
-        // return newly inserted row id
         return id;
     }
 
@@ -223,36 +175,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
 
         return allergen;
-    }
-
-    public FavouritesDB getFavouritesDB(long id) {
-        // get readable database as we are not inserting anything
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.query(FavouritesDB.TABLE_NAME,
-                new String[]{FavouritesDB.COLUMN_ID, FavouritesDB.COLUMN_IMAGE, FavouritesDB.COLUMN_NAME,
-                        FavouritesDB.COLUMN_PRICE, FavouritesDB.COLUMN_DESCRIPTION, FavouritesDB.COLUMN_INGREDIENTS,
-                FavouritesDB.COLUMN_DIET},
-                FavouritesDB.COLUMN_ID + "=?",
-                new String[]{String.valueOf(id)}, null, null, null, null);
-
-        if (cursor != null)
-            cursor.moveToFirst();
-
-        // prepare favourites object
-        FavouritesDB favourites = new FavouritesDB(
-                cursor.getInt(cursor.getColumnIndex(FavouritesDB.COLUMN_ID)),
-                cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_IMAGE)),
-                cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_NAME)),
-                cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_PRICE)),
-                cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_DESCRIPTION)),
-                cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_INGREDIENTS)),
-                cursor.getString(cursor.getColumnIndex(FavouritesDB.COLUMN_DIET)));
-
-        // close the db connection
-        cursor.close();
-
-        return favourites;
     }
 
     public List<DietDB> getAllDiets() {
